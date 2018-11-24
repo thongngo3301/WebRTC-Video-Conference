@@ -7,7 +7,16 @@ var Meeting = function (socketioHost) {
     var _localStream;
     var _remoteStream;
     var _turnReady;
-    var _pcConfig = { 'iceServers': [{ 'url': 'stun:stun.l.google.com:19302' }] };
+    var _pcConfig = {
+        'iceServers': [
+            { url: 'stun:118.70.171.246:3478' },
+            {
+                url: 'turn:118.70.171.246:3478',
+                username: 'onlysea212',
+                credential: 'Thisispassword123'
+            }
+        ]
+    };
     var _constraints = { video: true, audio: true };
     var _defaultChannel;
     var _privateAnswerChannel;
