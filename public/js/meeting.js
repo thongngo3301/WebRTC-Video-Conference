@@ -1,13 +1,13 @@
 'use strict';
 
-var Meeting = function (socketioHost) {
-    var exports = {};
+let Meeting = function (socketioHost) {
+    let exports = {};
 
-    var _isInitiator = false;
-    var _localStream;
-    var _remoteStream;
-    var _turnReady;
-    var _pcConfig = {
+    let _isInitiator = false;
+    let _localStream;
+    let _remoteStream;
+    let _turnReady;
+    let _pcConfig = {
         'iceServers': [
             { url: 'stun:118.70.171.246:3478' },
             {
@@ -17,22 +17,22 @@ var Meeting = function (socketioHost) {
             }
         ]
     };
-    var _constraints = { video: true, audio: true };
-    var _defaultChannel;
-    var _privateAnswerChannel;
-    var _offerChannels = {};
-    var _opc = {};
-    var _apc = {};
-    var _sendChannel = {};
-    var _room;
-    var _myID;
-    var _onRemoteVideoCallback;
-    var _onLocalVideoCallback;
-    var _onChatMessageCallback;
-    var _onChatReadyCallback;
-    var _onChatNotReadyCallback;
-    var _onParticipantHangupCallback;
-    var _host = socketioHost;
+    let _constraints = { video: true, audio: true };
+    let _defaultChannel;
+    let _privateAnswerChannel;
+    let _offerChannels = {};
+    let _opc = {};
+    let _apc = {};
+    let _sendChannel = {};
+    let _room;
+    let _myID;
+    let _onRemoteVideoCallback;
+    let _onLocalVideoCallback;
+    let _onChatMessageCallback;
+    let _onChatReadyCallback;
+    let _onChatNotReadyCallback;
+    let _onParticipantHangupCallback;
+    let _host = socketioHost;
 
     ////////////////////////////////////////////////
     // PUBLIC FUNCTIONS
@@ -77,7 +77,7 @@ var Meeting = function (socketioHost) {
 	 */
     function sendChatMessage(message) {
         console.log("Sending " + message)
-        for (var channel in _sendChannel) {
+        for (let channel in _sendChannel) {
             if (_sendChannel.hasOwnProperty(channel)) {
                 _sendChannel[channel].send(message);
             }
@@ -90,8 +90,8 @@ var Meeting = function (socketioHost) {
 	 *
 	 */
     function toggleMic() {
-        var tracks = _localStream.getTracks();
-        for (var i = 0; i < tracks.length; i++) {
+        let tracks = _localStream.getTracks();
+        for (let i = 0; i < tracks.length; i++) {
             if (tracks[i].kind == "audio") {
                 tracks[i].enabled = !tracks[i].enabled;
             }
@@ -105,8 +105,8 @@ var Meeting = function (socketioHost) {
 	 *
 	 */
     function toggleVideo() {
-        var tracks = _localStream.getTracks();
-        for (var i = 0; i < tracks.length; i++) {
+        let tracks = _localStream.getTracks();
+        for (let i = 0; i < tracks.length; i++) {
             if (tracks[i].kind == "video") {
                 tracks[i].enabled = !tracks[i].enabled;
             }
@@ -196,7 +196,7 @@ var Meeting = function (socketioHost) {
         _defaultChannel.on('message', function (message) {
             console.log('Client received message:', message);
             if (message.type === 'newparticipant') {
-                var partID = message.from;
+                let partID = message.from;
 
                 // Open a new communication channel to the new participant
                 _offerChannels[partID] = openSignalingChannel(partID);
@@ -209,7 +209,7 @@ var Meeting = function (socketioHost) {
                                 setRemoteDescriptionSuccess,
                                 setRemoteDescriptionError);
                         } else if (msg.type === 'candidate') {
-                            var candidate = new RTCIceCandidate({ sdpMLineIndex: msg.label, candidate: msg.candidate });
+                            let candidate = new RTCIceCandidate({ sdpMLineIndex: msg.label, candidate: msg.candidate });
                             console.log('got ice candidate from ' + msg.from);
                             _opc[msg.from].addIceCandidate(candidate, addIceCandidateSuccess, addIceCandidateError);
                         }
@@ -233,10 +233,10 @@ var Meeting = function (socketioHost) {
         _privateAnswerChannel.on('message', function (message) {
             if (message.dest === _myID) {
                 if (message.type === 'offer') {
-                    var to = message.from;
+                    let to = message.from;
                     createAnswer(message, _privateAnswerChannel, to);
                 } else if (message.type === 'candidate') {
-                    var candidate = new RTCIceCandidate({ sdpMLineIndex: message.label, candidate: message.candidate });
+                    let candidate = new RTCIceCandidate({ sdpMLineIndex: message.label, candidate: message.candidate });
                     _apc[message.from].addIceCandidate(candidate, addIceCandidateSuccess, addIceCandidateError);
                 }
             }
@@ -244,8 +244,8 @@ var Meeting = function (socketioHost) {
     }
 
     function requestTurn(turn_url) {
-        var turnExists = false;
-        for (var i in _pcConfig.iceServers) {
+        let turnExists = false;
+        for (let i in _pcConfig.iceServers) {
             if (_pcConfig.iceServers[i].url.substr(0, 5) === 'turn:') {
                 turnExists = true;
                 _turnReady = true;
@@ -255,10 +255,10 @@ var Meeting = function (socketioHost) {
 
         if (!turnExists) {
             console.log('Getting TURN server from ', turn_url);
-            var xhr = new XMLHttpRequest();
+            let xhr = new XMLHttpRequest();
             xhr.onreadystatechange = function () {
                 if (xhr.readyState === 4 && xhr.status === 200) {
-                    var turnServer = JSON.parse(xhr.responseText);
+                    let turnServer = JSON.parse(xhr.responseText);
                     console.log('Got TURN server: ', turnServer);
                     _pcConfig.iceServers.push({
                         'url': 'turn:' + turnServer.username + '@' + turnServer.turn,
@@ -295,7 +295,7 @@ var Meeting = function (socketioHost) {
 	 * @return a random ID
 	 */
     function generateID() {
-        var s4 = function () {
+        let s4 = function () {
             return Math.floor(Math.random() * 0x10000).toString(16);
         };
         return s4() + s4() + "-" + s4() + "-" + s4() + "-" + s4() + "-" + s4() + s4() + s4();
@@ -313,8 +313,8 @@ var Meeting = function (socketioHost) {
 	 * @return the socket
 	 */
     function openSignalingChannel(channel) {
-        var namespace = _host + '/' + channel;
-        var sckt = io.connect(namespace);
+        let namespace = _host + '/' + channel;
+        let sckt = io.connect(namespace);
         return sckt;
     }
 
@@ -344,9 +344,9 @@ var Meeting = function (socketioHost) {
         _sendChannel[participantId].onopen = handleSendChannelStateChange(participantId);
         _sendChannel[participantId].onclose = handleSendChannelStateChange(participantId);
 
-        var onSuccess = function (participantId) {
+        let onSuccess = function (participantId) {
             return function (sessionDescription) {
-                var channel = _offerChannels[participantId];
+                let channel = _offerChannels[participantId];
 
                 // Set Opus as the preferred codec in SDP if Opus is present.
                 sessionDescription.sdp = preferOpus(sessionDescription.sdp);
@@ -371,7 +371,7 @@ var Meeting = function (socketioHost) {
 
         _apc[to].ondatachannel = gotReceiveChannel(to);
 
-        var onSuccess = function (channel) {
+        let onSuccess = function (channel) {
             return function (sessionDescription) {
                 87
                 // Set Opus as the preferred codec in SDP if Opus is present.
@@ -472,29 +472,29 @@ var Meeting = function (socketioHost) {
 
     function handleSendChannelStateChange(participantId) {
         return function () {
-            var readyState = _sendChannel[participantId].readyState;
+            let readyState = _sendChannel[participantId].readyState;
             console.log('Send channel state is: ' + readyState);
 
             // check if we have at least one open channel before we set hat ready to false.
-            var open = checkIfOpenChannel();
+            let open = checkIfOpenChannel();
             enableMessageInterface(open);
         }
     }
 
     function handleReceiveChannelStateChange(participantId) {
         return function () {
-            var readyState = _sendChannel[participantId].readyState;
+            let readyState = _sendChannel[participantId].readyState;
             console.log('Receive channel state is: ' + readyState);
 
             // check if we have at least one open channel before we set hat ready to false.
-            var open = checkIfOpenChannel();
+            let open = checkIfOpenChannel();
             enableMessageInterface(open);
         }
     }
 
     function checkIfOpenChannel() {
-        var open = false;
-        for (var channel in _sendChannel) {
+        let open = false;
+        for (let channel in _sendChannel) {
             if (_sendChannel.hasOwnProperty(channel)) {
                 open = (_sendChannel[channel].readyState == "open");
                 if (open == true) {
@@ -545,10 +545,10 @@ var Meeting = function (socketioHost) {
 
     // Set Opus as the default audio codec if it's present.
     function preferOpus(sdp) {
-        var sdpLines = sdp.split('\r\n');
-        var mLineIndex;
+        let sdpLines = sdp.split('\r\n');
+        let mLineIndex;
         // Search for m line.
-        for (var i = 0; i < sdpLines.length; i++) {
+        for (let i = 0; i < sdpLines.length; i++) {
             if (sdpLines[i].search('m=audio') !== -1) {
                 mLineIndex = i;
                 break;
@@ -559,9 +559,9 @@ var Meeting = function (socketioHost) {
         }
 
         // If Opus is available, set it as the default in m line.
-        for (i = 0; i < sdpLines.length; i++) {
+        for (let i = 0; i < sdpLines.length; i++) {
             if (sdpLines[i].search('opus/48000') !== -1) {
-                var opusPayload = extractSdp(sdpLines[i], /:(\d+) opus\/48000/i);
+                let opusPayload = extractSdp(sdpLines[i], /:(\d+) opus\/48000/i);
                 if (opusPayload) {
                     sdpLines[mLineIndex] = setDefaultCodec(sdpLines[mLineIndex], opusPayload);
                 }
@@ -577,16 +577,16 @@ var Meeting = function (socketioHost) {
     }
 
     function extractSdp(sdpLine, pattern) {
-        var result = sdpLine.match(pattern);
+        let result = sdpLine.match(pattern);
         return result && result.length === 2 ? result[1] : null;
     }
 
     // Set the selected codec to the first in m line.
     function setDefaultCodec(mLine, payload) {
-        var elements = mLine.split(' ');
-        var newLine = [];
-        var index = 0;
-        for (var i = 0; i < elements.length; i++) {
+        let elements = mLine.split(' ');
+        let newLine = [];
+        let index = 0;
+        for (let i = 0; i < elements.length; i++) {
             if (index === 3) { // Format of media starts from the fourth.
                 newLine[index++] = payload; // Put target payload to the first.
             }
@@ -599,12 +599,12 @@ var Meeting = function (socketioHost) {
 
     // Strip CN from sdp before CN constraints is ready.
     function removeCN(sdpLines, mLineIndex) {
-        var mLineElements = sdpLines[mLineIndex].split(' ');
+        let mLineElements = sdpLines[mLineIndex].split(' ');
         // Scan from end for the convenience of removing an item.
-        for (var i = sdpLines.length - 1; i >= 0; i--) {
-            var payload = extractSdp(sdpLines[i], /a=rtpmap:(\d+) CN\/\d+/i);
+        for (let i = sdpLines.length - 1; i >= 0; i--) {
+            let payload = extractSdp(sdpLines[i], /a=rtpmap:(\d+) CN\/\d+/i);
             if (payload) {
-                var cnPos = mLineElements.indexOf(payload);
+                let cnPos = mLineElements.indexOf(payload);
                 if (cnPos !== -1) {
                     // Remove CN payload from m line.
                     mLineElements.splice(cnPos, 1);

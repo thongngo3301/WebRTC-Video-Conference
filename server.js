@@ -6,19 +6,19 @@
 
 'use strict';
 
-var nodestatic = require('node-static');
-var express = require('express');
-var path = require('path');
+const nodestatic = require('node-static');
+const express = require('express');
+const path = require('path');
 
-var serverPort = process.env.OPENSHIFT_NODEJS_PORT || 1337
-var serverIpAddress = process.env.OPENSHIFT_NODEJS_IP || 'localhost'
-var socketIoServer = '127.0.0.1';
+const serverPort = process.env.OPENSHIFT_NODEJS_PORT || 1337
+const serverIpAddress = process.env.OPENSHIFT_NODEJS_IP || 'localhost'
+const socketIoServer = '127.0.0.1';
 
 ////////////////////////////////////////////////
 // SETUP SERVER
 ////////////////////////////////////////////////
 
-var app = express();
+const app = express();
 require('./router')(app, socketIoServer);
 
 // Static content (css, js, .png, etc) is placed in /public
@@ -32,11 +32,11 @@ app.set('view engine', 'ejs');
 
 // Tell Server that we are actually rendering HTML files through EJS.
 app.engine('html', require('ejs').renderFile);
-var server = app.listen(serverPort, serverIpAddress, function () {
+const server = app.listen(serverPort, serverIpAddress, function () {
 	console.log("Express is running on port " + serverPort);
 });
 
-var io = require('socket.io').listen(server);
+const io = require('socket.io').listen(server);
 
 ////////////////////////////////////////////////
 // EVENT HANDLERS
@@ -45,8 +45,8 @@ var io = require('socket.io').listen(server);
 io.sockets.on('connection', function (socket) {
 
 	function log() {
-		var array = [">>> Message from server: "];
-		for (var i = 0; i < arguments.length; i++) {
+		let array = [">>> Message from server: "];
+		for (let i = 0; i < arguments.length; i++) {
 			array.push(arguments[i]);
 		}
 		socket.emit('log', array);
@@ -58,12 +58,12 @@ io.sockets.on('connection', function (socket) {
 	});
 
 	socket.on('create or join', function (message) {
-		var room = message.room;
+		let room = message.room;
 		socket.room = room;
-		var participantID = message.from;
+		let participantID = message.from;
 		configNameSpaceChannel(participantID);
 
-		var numClients = io.sockets.clients(room).length;
+		let numClients = io.sockets.clients(room).length;
 
 		log('Room ' + room + ' has ' + numClients + ' client(s)');
 		log('Request to create or join room', room);
@@ -80,7 +80,7 @@ io.sockets.on('connection', function (socket) {
 
 	// Setup a communication channel (namespace) to communicate with a given participant (participantID)
 	function configNameSpaceChannel(participantID) {
-		var socketNamespace = io.of('/' + participantID);
+		let socketNamespace = io.of('/' + participantID);
 
 		socketNamespace.on('connection', function (socket) {
 			socket.on('message', function (message) {

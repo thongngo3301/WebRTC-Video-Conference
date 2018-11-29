@@ -1,29 +1,49 @@
 <!DOCTYPE html>
 <html lang="en">
-	<head>
-		<meta charset="UTF-8" />
-		<meta name='description' content='WebRTC Reference App' />
-		<meta name='viewport' content='width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1'>
-		<script>var HOST_ADDRESS='<%= hostAddress %>';</script>  
-		<script src='/socket.io/socket.io.js'></script>
-		<script src='/js/lib/adapter.js'></script>
-		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>		
-		<script src='/js/meeting.js'></script>
-		<script src='/js/room.js'></script>
-		<link rel="stylesheet" type="text/css" href="/css/room.css" media="screen" />
-		<title>Video Conference</title>
-	</head>
 
-	<body>
-		<div class="container">
-			<div id="videos">
-                <div id="videosWrapper">
-				    <div id="localVideoWrap" class='videoWrap'>
-					    <video class="videoBox" id="localVideo" autoplay></video>
+<head>
+	<meta charset="UTF-8" />
+	<meta name='description' content='WebRTC Reference App' />
+	<meta name='viewport' content='width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1'>
+	<script>var HOST_ADDRESS = '<%= hostAddress %>';</script>
+	<script src='/socket.io/socket.io.js'></script>
+	<script src='/js/lib/adapter.js'></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+	<script src='/js/meeting.js'></script>
+	<script src='/js/room.js'></script>
+	<link rel="stylesheet" type="text/css" href="/css/room.css" media="screen" />
+	<title>Video Conference</title>
+</head>
+
+<body>
+	<div id="container">
+		<div id="videos-chats-container">
+			<div id="videos-containter">
+				<div id="videos">
+					<div id="videosWrapper">
+						<div id="localVideoWrap" class='videoWrap'>
+							<video class="videoBox" id="localVideo" autoplay></video>
+						</div>
 					</div>
-                </div>
+				</div>
+			</div>
+			<div>
+				<button id="micMenu">Toggle Microphone</button>
+				<button id="videoMenu">Toggle Video</button>
 			</div>
 		</div>
-	</body>
+		<div id="chat-container">
+			<div id="chat-header">
+				<h4>MESSENGER</h4>
+			</div>
+			<div id="chat-list">
+
+			</div>
+			<div id="chat-input">
+				<input type="textarea" />
+			</div>
+		</div>
+	</div>
+</body>
 
 </html>
