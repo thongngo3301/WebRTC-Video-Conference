@@ -211,7 +211,10 @@ io.sockets.on('connection', function (socket) {
 		let room = socket.room;
 		io.sockets.clients(room).forEach(client => {
 			if (client.participantID != socket.participantID) {
-				client.emit('new_message', JSON.stringify(message));
+				client.emit('new_message', JSON.stringify({
+					participantID: client.participantID,
+					message: message
+				}));
 			}
 		});
 	});
