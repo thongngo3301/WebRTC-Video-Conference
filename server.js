@@ -11,6 +11,7 @@ const express = require('express');
 const path = require('path');
 const https = require('https');
 const fs = require('fs');
+const kurento = require('kurento-client');
 
 const serverPort = 8443;
 
@@ -203,6 +204,18 @@ io.sockets.on('connection', function (socket) {
 					});
 				}
 			});
+		});
+	});
+
+	socket.on('send_message', function(message) {
+		let room = socket.room;
+		io.sockets.clients(room).forEach(client => {
+			if (client.participantID != socket.participantID) {
+				client.emit('new_message', JSON.stringify({
+					participantID: socket.participantID,
+					message: message
+				}));
+			}
 		});
 	});
 

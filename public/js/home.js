@@ -8,6 +8,12 @@ $(document).ready(function () {
         let roomName = document.getElementById("room-url").value;
         joinRoom(roomName);
     });
+    $('#room-url').keyup(function (e) {
+        if (e.keyCode == 13) {
+            let roomName = document.getElementById("room-url").value;
+            joinRoom(roomName);
+        }
+    });
 });
 
 function randomUrl() {
