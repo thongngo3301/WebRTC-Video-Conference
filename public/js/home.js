@@ -1,4 +1,4 @@
-const rootURL = 'http://' + window.location.host + '/';
+const rootURL = 'https://' + window.location.host + '/';
 $(document).ready(function () {
     generateRoomUrl();
     $('#random-btn').click(function () {

@@ -42,7 +42,7 @@ app.set('view engine', 'ejs');
 // Tell Server that we are actually rendering HTML files through EJS.
 app.engine('html', require('ejs').renderFile);
 
-sslServ = https.createServer(options, app).listen(serverPort, serverIpAddress, function () {
+const sslServ = https.createServer(options, app).listen(serverPort, serverIpAddress, function () {
 	console.log("Express is running on port " + serverPort);	
 });
 
