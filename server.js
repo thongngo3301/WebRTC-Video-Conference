@@ -207,6 +207,15 @@ io.sockets.on('connection', function (socket) {
 		});
 	});
 
+	socket.on('send_message', function(message) {
+		let room = socket.room;
+		io.sockets.clients(room).forEach(client => {
+			if (client.participantID != socket.participantID) {
+				client.emit('new_message', JSON.stringify(message));
+			}
+		});
+	});
+
 	// notify for create in of connection
 	// 2
 	socket.on('broadcast_stream', function (message) {
