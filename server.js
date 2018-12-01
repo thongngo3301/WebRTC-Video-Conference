@@ -13,8 +13,19 @@ const https = require('https');
 const fs = require('fs');
 
 const serverPort = 8443;
+
+////////////////////////////////////////////////
+// LOCAL
+// const serverIpAddress = 'localhost';
+// const socketIoServer = '127.0.0.1';
+////////////////////////////////////////////////
+
+////////////////////////////////////////////////
+// PRODUCTION
 const serverIpAddress = '0.0.0.0';
 const socketIoServer = 'fit5.fit-uet.tk';
+////////////////////////////////////////////////
+
 const kurento_uri = 'ws://localhost:8888/kurento';
 const pkey = fs.readFileSync('keys/key.pem');
 const pcert = fs.readFileSync('keys/cert.pem');
@@ -72,7 +83,7 @@ io.sockets.on('connection', function (socket) {
 		socket.broadcast.to(socket.room).emit('message', message);
 	});
 
-	socket.on('create or join', function (message) {
+	socket.on('create_or_join', function (message) {
 		let room = message.room;
 		socket.room = room;
 		let participantID = message.from;
@@ -96,7 +107,7 @@ io.sockets.on('connection', function (socket) {
 
 	// create out of connection
 	// 1
-	socket.on('kurento create pipeline', function (message) {
+	socket.on('kurento_create_pipeline', function (message) {
 		let sdpOffer = message.sdpOffer;
 		kurento(kurento_uri, (error, kurentoClient) => {
 			if (error) {
@@ -110,7 +121,7 @@ io.sockets.on('connection', function (socket) {
 						socket.webRtcEndpoint = webRtcEndpoint;
 						// Relay icecandidate from kurento server to client
 						webRtcEndpoint.on('IceCandidate', event => {
-							socket.emit('icecandidate exchange', JSON.stringify(event.candidate));
+							socket.emit('icecandidate_exchange', JSON.stringify(event.candidate));
 						});
 
 						// received sdpOffer and response sdpAnswer
@@ -119,7 +130,7 @@ io.sockets.on('connection', function (socket) {
 								console.log(error);
 							}
 							else {
-								socket.emit('kurento answer offer', JSON.stringify(sdpAnswer));
+								socket.emit('kurento_answer', JSON.stringify(sdpAnswer));
 							}
 						});
 
@@ -136,7 +147,7 @@ io.sockets.on('connection', function (socket) {
 	});
 
 	// new client joined
-	socket.on('create new endpoint', function (message) {
+	socket.on('create_new_endpoint', function (message) {
 		let sdpOffer = message.sdpOffer;
 		let participantID = message.participantID;				// ID of new client
 		let participantOffer = message.participantOffer;		// sdpOffer of new client
@@ -148,7 +159,7 @@ io.sockets.on('connection', function (socket) {
 		 */
 		socket.pipeline.create('WebRtcEndpoint', (error, webRtcEndpoint) => {
 			webRtcEndpoint.on('IceCandidate', event => {
-				client.emit('icecandidate exchange', JSON.stringify(event.candidate));
+				client.emit('icecandidate_exchange', JSON.stringify(event.candidate));
 			});
 
 			webRtcEndpoint.gatherCandidates(error => {
@@ -158,7 +169,7 @@ io.sockets.on('connection', function (socket) {
 			});
 
 			webRtcEndpoint.processOffer(participantOffer, (error, sdpAnswer) => {
-				client.emit('kurento sdp answer', JSON.stringify(sdpAnswer));
+				client.emit('kurento_answer', JSON.stringify(sdpAnswer));
 				socket.webRtcEndpoint.connect(webRtcEndpoint, error => {
 					if (error) {
 						console.log(error);
@@ -170,7 +181,7 @@ io.sockets.on('connection', function (socket) {
 		// this as a viewer
 		client.pipeline.create('WebRtcEndpoint', (error, webRtcEndpoint) => {
 			webRtcEndpoint.on('IceCandidate', event => {
-				socket.emit('icecandidate exchange', JSON.stringify(event.candidate));
+				socket.emit('icecandidate_exchange', JSON.stringify(event.candidate));
 			});
 
 			webRtcEndpoint.gatherCandidates(error => {
@@ -184,7 +195,7 @@ io.sockets.on('connection', function (socket) {
 					console.log(error);
 				}
 				else {
-					socket.emit('kurento sdp answer', JSON.stringify(sdpAnswer));
+					socket.emit('kurento_answer', JSON.stringify(sdpAnswer));
 					client.webRtcEndpoint.connect(webRtcEndpoint, error => {
 						if (error) {
 							console.log(error);
@@ -197,8 +208,8 @@ io.sockets.on('connection', function (socket) {
 
 	// notify for create in of connection
 	// 2
-	socket.on('broadcast stream', function (message) {
-		io.sockets.clients.broadcast(socket.room).emit('new client joined', JSON.stringify({
+	socket.on('broadcast_stream', function (message) {
+		io.sockets.clients.broadcast(socket.room).emit('new_client_joined', JSON.stringify({
 			participantID: socket.participantID,
 			sdpOffer: message.sdpOffer
 		}));

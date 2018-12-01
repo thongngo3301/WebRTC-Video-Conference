@@ -3,21 +3,22 @@
 let host = HOST_ADDRESS; // HOST_ADDRESS gets injected into room.ejs from the server side when it is rendered
 
 $(document).ready(function () {
+	let room = window.location.pathname.match(/([^\/]*)\/*$/)[1];
 	/////////////////////////////////
 	// CREATE MEETING
 	/////////////////////////////////
-	let meeting = new Meeting(host);
+	let meeting_mesh = new MeetingMesh(host);
 
-	meeting.onLocalVideo(function (stream) {
+	meeting_mesh.onLocalVideo(function (stream) {
 		//alert(stream.getVideoTracks().length);
 		document.querySelector('#localVideo').src = window.URL.createObjectURL(stream);
 
 		$("#micMenu").on("click", function callback(e) {
-			meeting.toggleMic();
+			meeting_mesh.toggleMic();
 		});
 
 		$("#videoMenu").on("click", function callback(e) {
-			meeting.toggleVideo();
+			meeting_mesh.toggleVideo();
 		});
 
 		$("#localVideo").prop('muted', true);
@@ -25,24 +26,23 @@ $(document).ready(function () {
 	}
 	);
 
-	meeting.onRemoteVideo(function (stream, participantID) {
+	meeting_mesh.onRemoteVideo(function (stream, participantID) {
 		addRemoteVideo(stream, participantID);
 	}
 	);
 
-	meeting.onParticipantHangup(function (participantID) {
+	meeting_mesh.onParticipantHangup(function (participantID) {
 		// Someone just left the meeting. Remove the participants video
 		removeRemoteVideo(participantID);
 	}
 	);
 
-	meeting.onChatReady(function () {
+	meeting_mesh.onChatReady(function () {
 		console.log("Chat is ready");
 	}
 	);
 
-	let room = window.location.pathname.match(/([^\/]*)\/*$/)[1];
-	meeting.joinRoom(room);
+	meeting_mesh.joinRoom(room);
 
 }); // end of document.ready
 

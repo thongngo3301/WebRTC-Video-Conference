@@ -1,6 +1,6 @@
 'use strict';
 
-let Meeting = function (socketioHost) {
+let MeetingMesh = function (socketioHost) {
     let exports = {};
 
     let _isInitiator = false;
@@ -54,7 +54,7 @@ let Meeting = function (socketioHost) {
 
         if (_room !== '') {
             console.log('Create or join room', _room);
-            _defaultChannel.emit('create or join', { room: _room, from: _myID });
+            _defaultChannel.emit('create_or_join', { room: _room, from: _myID });
         }
 
         // Open up a private communication channel
@@ -67,7 +67,6 @@ let Meeting = function (socketioHost) {
             _defaultChannel.emit('message', { type: 'bye', from: _myID });
         }
     }
-
 
     /**
 	 *
@@ -97,7 +96,6 @@ let Meeting = function (socketioHost) {
             }
         }
     }
-
 
     /**
 	 *
@@ -243,36 +241,6 @@ let Meeting = function (socketioHost) {
         });
     }
 
-    function requestTurn(turn_url) {
-        let turnExists = false;
-        for (let i in _pcConfig.iceServers) {
-            if (_pcConfig.iceServers[i].url.substr(0, 5) === 'turn:') {
-                turnExists = true;
-                _turnReady = true;
-                break;
-            }
-        }
-
-        if (!turnExists) {
-            console.log('Getting TURN server from ', turn_url);
-            let xhr = new XMLHttpRequest();
-            xhr.onreadystatechange = function () {
-                if (xhr.readyState === 4 && xhr.status === 200) {
-                    let turnServer = JSON.parse(xhr.responseText);
-                    console.log('Got TURN server: ', turnServer);
-                    _pcConfig.iceServers.push({
-                        'url': 'turn:' + turnServer.username + '@' + turnServer.turn,
-                        'credential': turnServer.password
-                    });
-                    _turnReady = true;
-                }
-            }
-            xhr.open('GET', turn_url, true);
-            xhr.send();
-        }
-    }
-
-
     ///////////////////////////////////////////
     // UTIL FUNCTIONS
     ///////////////////////////////////////////
@@ -287,7 +255,6 @@ let Meeting = function (socketioHost) {
         _onRemoteVideoCallback(stream, from);
     }
 
-
     /**
 	 *
 	 * Generates a random ID.
@@ -300,7 +267,6 @@ let Meeting = function (socketioHost) {
         };
         return s4() + s4() + "-" + s4() + "-" + s4() + "-" + s4() + "-" + s4() + s4() + s4();
     }
-
 
     ////////////////////////////////////////////////
     // COMMUNICATION FUNCTIONS
@@ -401,7 +367,6 @@ let Meeting = function (socketioHost) {
 
         _onParticipantHangupCallback(from);
     }
-
 
     ////////////////////////////////////////////////
     // HANDLERS
@@ -538,7 +503,6 @@ let Meeting = function (socketioHost) {
 
     function addIceCandidateError(error) { }
 
-
     ////////////////////////////////////////////////
     // CODEC
     ////////////////////////////////////////////////
@@ -617,7 +581,6 @@ let Meeting = function (socketioHost) {
         sdpLines[mLineIndex] = mLineElements.join(' ');
         return sdpLines;
     }
-
 
     ////////////////////////////////////////////////
     // EXPORT PUBLIC FUNCTIONS
