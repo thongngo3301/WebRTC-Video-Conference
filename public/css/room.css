@@ -11,6 +11,11 @@ body {
     justify-content: space-evenly;
 }
 
+#videos-chats-container{
+    flex-basis: 60%;
+}
+
+
 /*chat*/
 
 #chat-container {

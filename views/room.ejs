@@ -7,6 +7,7 @@
 	<meta name='viewport' content='width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1'>
 	<script>var HOST_ADDRESS = '<%= hostAddress %>';</script>
 	<script src='/socket.io/socket.io.js'></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.dev.js"></script>
 	<script src='/js/lib/adapter.js'></script>
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
 	<script src='/js/meeting.js'></script>
@@ -37,55 +38,9 @@
 				<h4>MESSENGER</h4>
 			</div>
 			<div id="chat-list">
-				<div class="chat-message-left">
-					<div class="message-container">
-						<div class="message">what the fuck r u doing !????? hehehe</div>
-						<div class="detail">User name</div>
-					</div>
-				</div>
-				<div class="chat-message-right">
-					<div class="message-container">
-						<div class="message">what the fuck r u doing !????? hehehe</div>
-					</div>
-				</div>
-				<div class="chat-message-right">
-					<div class="message-container">
-						<div class="message">what the fuck r u doing !????? hehehe</div>
-					</div>
-				</div>
-				<div class="chat-message-right">
-					<div class="message-container">
-						<div class="message">what the fuck r u doing !????? hehehe</div>
-					</div>
-				</div>
-				<div class="chat-message-right">
-					<div class="message-container">
-						<div class="message">what the fuck r u doing !????? hehehe</div>
-					</div>
-				</div>
-				<div class="chat-message-right">
-					<div class="message-container">
-						<div class="message">what the fuck r u doing !????? hehehe</div>
-					</div>
-				</div>
-				<div class="chat-message-right">
-					<div class="message-container">
-						<div class="message">what the fuck r u doing !????? hehehe</div>
-					</div>
-				</div>
-				<div class="chat-message-right">
-					<div class="message-container">
-						<div class="message">what the fuck r u doing !????? hehehe</div>
-					</div>
-				</div>
-				<div class="chat-message-right">
-					<div class="message-container">
-						<div class="message">what the fuck r u doing !????? hehehe</div>
-					</div>
-				</div>
 			</div>
 			<div id="chat-input">
-				<input type="textarea" placeholder="Type message..." />
+				<input id="input-message" type="textarea" placeholder="Type message..." />
 				<div id="chat-submit-icon">
 					<svg width="60%" height="60%" viewBox="0 0 512.00019 512" width="512pt" xmlns="http://www.w3.org/2000/svg">
 						<path d="m501.269531 10.738281-253.320312 253.324219 91.726562 188.660156c3.414063 7.019532 13.613281 6.410156 16.164063-.972656l148.191406-429.03125c1.578125-4.570312.175781-9.042969-2.761719-11.980469zm0 0"
@@ -107,6 +62,7 @@
 		</div>
 	</div>
 	<script src='/js/messageHandle.js'></script>
+
 </body>
 
 </html>
