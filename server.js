@@ -12,9 +12,9 @@ const path = require('path');
 const https = require('https');
 const fs = require('fs');
 
-const serverPort = 8443
-const serverIpAddress = 'localhost';
-const socketIoServer = '127.0.0.1';
+const serverPort = 8443;
+const serverIpAddress = '0.0.0.0';
+const socketIoServer = 'fit5.fit-uet.tk';
 const kurento_uri = 'ws://localhost:8888/kurento';
 const pkey = fs.readFileSync('keys/key.pem');
 const pcert = fs.readFileSync('keys/cert.pem');
@@ -43,7 +43,7 @@ app.set('view engine', 'ejs');
 app.engine('html', require('ejs').renderFile);
 
 const sslServ = https.createServer(options, app).listen(serverPort, serverIpAddress, function () {
-	console.log("Express is running on port " + serverPort);	
+	console.log("Express is running on port " + serverPort);
 });
 
 // const server = app.listen(serverPort, serverIpAddress, function () {
@@ -136,7 +136,7 @@ io.sockets.on('connection', function (socket) {
 	});
 
 	// new client joined
-	socket.on('create new endpoint', function(message) {
+	socket.on('create new endpoint', function (message) {
 		let sdpOffer = message.sdpOffer;
 		let participantID = message.participantID;				// ID of new client
 		let participantOffer = message.participantOffer;		// sdpOffer of new client
