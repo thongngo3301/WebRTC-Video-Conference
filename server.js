@@ -9,17 +9,25 @@
 const nodestatic = require('node-static');
 const express = require('express');
 const path = require('path');
+const https = require('https');
+const fs = require('fs');
 
-const serverPort = process.env.OPENSHIFT_NODEJS_PORT || 1337
-const serverIpAddress = process.env.OPENSHIFT_NODEJS_IP || 'localhost'
+const serverPort = 8443
+const serverIpAddress = 'localhost';
 const socketIoServer = '127.0.0.1';
 const kurento_uri = 'ws://localhost:8888/kurento';
-
+const pkey = fs.readFileSync('keys/key.pem');
+const pcert = fs.readFileSync('keys/cert.pem');
+const options = {
+	key: pkey,
+	cert: pcert
+}
 ////////////////////////////////////////////////
 // SETUP SERVER
 ////////////////////////////////////////////////
 
 const app = express();
+
 require('./router')(app, socketIoServer);
 
 // Static content (css, js, .png, etc) is placed in /public
@@ -33,11 +41,16 @@ app.set('view engine', 'ejs');
 
 // Tell Server that we are actually rendering HTML files through EJS.
 app.engine('html', require('ejs').renderFile);
-const server = app.listen(serverPort, serverIpAddress, function () {
-	console.log("Express is running on port " + serverPort);
+
+sslServ = https.createServer(options, app).listen(serverPort, serverIpAddress, function () {
+	console.log("Express is running on port " + serverPort);	
 });
 
-const io = require('socket.io').listen(server);
+// const server = app.listen(serverPort, serverIpAddress, function () {
+// 	console.log("Express is running on port " + serverPort);
+// });
+
+const io = require('socket.io').listen(sslServ);
 
 
 ////////////////////////////////////////////////
@@ -82,6 +95,7 @@ io.sockets.on('connection', function (socket) {
 	});
 
 	// create out of connection
+	// 1
 	socket.on('kurento create pipeline', function (message) {
 		let sdpOffer = message.sdpOffer;
 		kurento(kurento_uri, (error, kurentoClient) => {
@@ -92,6 +106,7 @@ io.sockets.on('connection', function (socket) {
 				kurentoClient.create('MediaPipeline', (error, pipeline) => {
 					socket.pipeline = pipeline;
 					pipeline.create('WebRtcEndpoint', (error, webRtcEndpoint) => {
+
 						socket.webRtcEndpoint = webRtcEndpoint;
 						// Relay icecandidate from kurento server to client
 						webRtcEndpoint.on('IceCandidate', event => {
@@ -181,6 +196,7 @@ io.sockets.on('connection', function (socket) {
 	});
 
 	// notify for create in of connection
+	// 2
 	socket.on('broadcast stream', function (message) {
 		io.sockets.clients.broadcast(socket.room).emit('new client joined', JSON.stringify({
 			participantID: socket.participantID,
