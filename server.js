@@ -212,7 +212,7 @@ io.sockets.on('connection', function (socket) {
 		io.sockets.clients(room).forEach(client => {
 			if (client.participantID != socket.participantID) {
 				client.emit('new_message', JSON.stringify({
-					participantID: client.participantID,
+					participantID: socket.participantID,
 					message: message
 				}));
 			}
