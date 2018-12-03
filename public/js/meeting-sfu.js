@@ -275,7 +275,7 @@ let MeetingSfu = function (socketioHost, __id) {
         _opc.onicecandidate = handleIceCandidateAnswerWrapper(_defaultChannel);
         // _opc.onaddstream = handleRemoteStreamAdded();
         // _opc.onremovestream = handleRemoteStreamRemoved;
-        _opc.addStream(_localStream);
+        // _opc.addStream(_localStream);
 
         let onSuccess = function () {
             return function (sessionDescription) {

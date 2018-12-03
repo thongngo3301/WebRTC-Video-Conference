@@ -88,17 +88,16 @@ io.sockets.on('connection', function (socket) {
 	});
 
 	socket.on('disconnect', function () {
-		socket.broadcast.to(socket.room).emit('message', JSON.stringify({
+		socket.broadcast.to(socket.room).emit('message', {
 			type: 'bye',
 			from: socket.participantID
-		}));
+		});
 	});
 
 	socket.on('cli2kms', function(message) {
 		switch (message.type) {
 			// 1
 			case 'offer':
-				sdpOfferCache[socket.participantID] = message.sdp;
 				kurento(kurento_uri, (error, kurentoClient) => {
 					if (error) {
 						console.log(error);
@@ -109,26 +108,26 @@ io.sockets.on('connection', function (socket) {
 							pipeline.create('WebRtcEndpoint', (error, webRtcEndpoint) => {
 								socket.webRtcEndpoint = webRtcEndpoint;
 								// Relay icecandidate from kurento server to client
-								webRtcEndpoint.on('IceCandidate', event => {
-									socket.emit('kms2cli', JSON.stringify({
+								webRtcEndpoint.on('OnIceCandidate', event => {
+									socket.emit('kms2cli', {
 										type: 'candidate',
 										label: event.candidate.sdpMLineIndex,
 										id: event.candidate.sdpMid,
 										candidate: event.candidate.candidate
-									}));
+									});
 								});
 
 								// received sdpOffer and response sdpAnswer
-								webRtcEndpoint.processOffer(sdpOffer, (error, sdpAnswer) => {
+								webRtcEndpoint.processOffer(JSON.stringify(message.sdp), (error, sdpAnswer) => {
 									if (error) {
 										console.log(error);
 									}
 									else {
 										// 2
-										socket.emit('kms2cli', JSON.stringify({
+										socket.emit('kms2cli', {
 											type: 'answer',
 											sdp: sdpAnswer
-										}));
+										});
 									}
 								});
 		
@@ -145,14 +144,14 @@ io.sockets.on('connection', function (socket) {
 										// 2.5
 										socket.pipeline.create('WebRtcEndpoint', (error, webRtcEndpoint) => {
 											client.streamInput[socket.participantID] = webRtcEndpoint;
-											webRtcEndpoint.on('IceCandidate', event => {
-												client.emit('kms2cli', JSON.stringify({
+											webRtcEndpoint.on('OnIceCandidate', event => {
+												client.emit('kms2cli', {
 													type: 'candidate',
 													label: event.candidate.sdpMLineIndex,
 													id: event.candidate.sdpMid,
 													candidate: event.candidate.candidate,
 													from: client.participantID
-												}));
+												});
 											});
 											webRtcEndpoint.gatherCandidates(error => {
 												console.log(error);
@@ -165,11 +164,11 @@ io.sockets.on('connection', function (socket) {
 													console.log(error);
 												}
 												else {
-													client.emit('kms2cli', JSON.stringify({
+													client.emit('kms2cli', {
 														type: 'offer',
 														sdp: sdp,
 														from: socket.participantID
-													}));
+													});
 												}
 											})
 										});
@@ -178,21 +177,21 @@ io.sockets.on('connection', function (socket) {
 										// 3
 										client.pipeline.create('WebRtcEndpoint', (error, webRtcEndpoint) => {
 											socket.streamInput[client.participantID] = webRtcEndpoint;
-											webRtcEndpoint.on('IceCandidate', event => {
-												socket.emit('kms2cli', JSON.stringify({
+											webRtcEndpoint.on('OnIceCandidate', event => {
+												socket.emit('kms2cli', {
 													type: 'candidate',
 													label: event.candidate.sdpMLineIndex,
 													id: event.candidate.sdpMid,
 													candidate: event.candidate.candidate,
 													from: client.participantID
-												}));
+												});
 											});
 											webRtcEndpoint.generateOffer((error, sdp) => {
-												socket.emit('kms2cli', JSON.stringify({
+												socket.emit('kms2cli', {
 													type: 'offer',
 													sdp: sdp,
 													from: client.participantID
-												}));
+												});
 											});
 										});
 									}
@@ -235,9 +234,7 @@ io.sockets.on('connection', function (socket) {
 			socket.emit('joined', room);
 		}
 
-		socket.emit('create_or_join_success', JSON.stringify({
-			
-		}));
+		socket.emit('create_or_join_success');
 	});
 
 	socket.on('send_message', function(message) {
