@@ -198,7 +198,7 @@ let MeetingSfu = function (socketioHost, __id) {
                     _opc.setRemoteDescription(new RTCSessionDescription(message.sdp), setRemoteDescriptionSuccess, setRemoteDescriptionError);
                     break;
                 case 'candidate':
-                    let candidate = new RTCIceCandidate({ sdpMLineIndex: msg.label, candidate: msg.candidate });
+                    let candidate = new RTCIceCandidate({ sdpMLineIndex: message.label, candidate: message.candidate });
                     if (message.from == _myID) {
                         _opc.addIceCandidate(candidate, addIceCandidateSuccess, addIceCandidateError);
                     } else {
@@ -295,7 +295,7 @@ let MeetingSfu = function (socketioHost, __id) {
         _apc[participantId].onaddstream = handleRemoteStreamAdded(participantId);
         _apc[participantId].onremovestream = handleRemoteStreamRemoved;
         _apc[participantId].addStream(_localStream);
-        _apc[participantId].setRemoteDescription(new RTCSessionDescription(sdp.sdp), setRemoteDescriptionSuccess, setRemoteDescriptionError);
+        _apc[participantId].setRemoteDescription(new RTCSessionDescription(sdp), setRemoteDescriptionSuccess, setRemoteDescriptionError);
 
         let onSuccess = function () {
             return function (sessionDescription) {
