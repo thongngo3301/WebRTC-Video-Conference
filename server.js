@@ -118,7 +118,7 @@ io.sockets.on('connection', function (socket) {
 								});
 
 								// received sdpOffer and response sdpAnswer
-								webRtcEndpoint.processOffer(JSON.stringify(message.sdp), (error, sdpAnswer) => {
+								webRtcEndpoint.processOffer(JSON.stringify(message.sdp.sdp), (error, sdpAnswer) => {
 									if (error) {
 										console.log(error);
 									}
@@ -129,13 +129,12 @@ io.sockets.on('connection', function (socket) {
 											sdp: sdpAnswer
 										});
 									}
-								});
-		
-								// Search icecandidate available
-								webRtcEndpoint.gatherCandidates(error => {
-									if (error) {
-										console.log(error);
-									}
+									// Search icecandidate available
+									webRtcEndpoint.gatherCandidates(error => {
+										if (error) {
+											console.log(error);
+										}
+									});
 								});
 
 								io.sockets.clients(socket.room).forEach(client => {
@@ -153,9 +152,6 @@ io.sockets.on('connection', function (socket) {
 													from: client.participantID
 												});
 											});
-											webRtcEndpoint.gatherCandidates(error => {
-												console.log(error);
-											});
 											socket.webRtcEndpoint.connect(webRtcEndpoint, error => {
 												console.log(error);
 											});
@@ -170,6 +166,9 @@ io.sockets.on('connection', function (socket) {
 														from: socket.participantID
 													});
 												}
+												webRtcEndpoint.gatherCandidates(error => {
+													console.log(error);
+												});
 											})
 										});
 
@@ -186,11 +185,17 @@ io.sockets.on('connection', function (socket) {
 													from: client.participantID
 												});
 											});
+											client.webRtcEndpoint.connect(webRtcEndpoint, error => {
+												console.log(error);
+											})
 											webRtcEndpoint.generateOffer((error, sdp) => {
 												socket.emit('kms2cli', {
 													type: 'offer',
 													sdp: sdp,
 													from: client.participantID
+												});
+												webRtcEndpoint.gatherCandidates(error => {
+													console.log(error);
 												});
 											});
 										});
