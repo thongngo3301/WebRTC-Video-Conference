@@ -84,6 +84,13 @@ io.sockets.on('connection', function (socket) {
 		socket.broadcast.to(socket.room).emit('message', message);
 	});
 
+	socket.on('disconnect', function () {
+		socket.broadcast.to(socket.room).emit('message', JSON.stringify({
+			type: 'bye',
+			from: socket.participantID
+		}));
+	});
+
 	socket.on('create_or_join', function (message) {
 		let room = message.room;
 		socket.room = room;
