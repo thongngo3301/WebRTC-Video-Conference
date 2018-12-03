@@ -9,6 +9,23 @@ active-x-obfuscator@0.0.1:
   dependencies:
     zeparser "0.0.5"
 
+asap@~2.0.3:
+  version "2.0.6"
+  resolved "https://registry.yarnpkg.com/asap/-/asap-2.0.6.tgz#e50347611d7e690943208bbdafebcbc2fb866d46"
+  integrity sha1-5QNHYR1+aQlDIIu9r+vLwvuGbUY=
+
+async@^2.0.1:
+  version "2.6.1"
+  resolved "https://registry.yarnpkg.com/async/-/async-2.6.1.tgz#b245a23ca71930044ec53fa46aa00a3e87c6a610"
+  integrity sha512-fNEiL2+AZt6AlAw/29Cr0UDe4sRAHCpEHh54WMz+Bb7QfNcFw4h3loofyJpLeQs4Yx7yuqu/2dLgM5hKOs6HlQ==
+  dependencies:
+    lodash "^4.17.10"
+
+backoff@~2.3.0:
+  version "2.3.0"
+  resolved "https://registry.yarnpkg.com/backoff/-/backoff-2.3.0.tgz#ee7c7e38093f92e472859db635e7652454fc21ea"
+  integrity sha1-7nx+OAk/kuRyhZ22NedlJFT8Ieo=
+
 base64id@0.1.0:
   version "0.1.0"
   resolved "https://registry.yarnpkg.com/base64id/-/base64id-0.1.0.tgz#02ce0fdeee0cef4f40080e1e73e834f0b1bfce3f"
@@ -19,10 +36,23 @@ batch@0.5.0:
   resolved "https://registry.yarnpkg.com/batch/-/batch-0.5.0.tgz#fd2e05a7a5d696b4db9314013e285d8ff3557ec3"
   integrity sha1-/S4Fp6XWlrTbkxQBPihdj/NVfsM=
 
+bindings@1.2.x, bindings@~1.2.1:
+  version "1.2.1"
+  resolved "https://registry.yarnpkg.com/bindings/-/bindings-1.2.1.tgz#14ad6113812d2d37d72e67b4cacb4bb726505f11"
+  integrity sha1-FK1hE4EtLTfXLme0ystLtyZQXxE=
+
 buffer-crc32@0.2.1:
   version "0.2.1"
   resolved "https://registry.yarnpkg.com/buffer-crc32/-/buffer-crc32-0.2.1.tgz#be3e5382fc02b6d6324956ac1af98aa98b08534c"
   integrity sha1-vj5TgvwCttYySVasGvmKqYsIU0w=
+
+bufferutil@1.2.x:
+  version "1.2.1"
+  resolved "https://registry.yarnpkg.com/bufferutil/-/bufferutil-1.2.1.tgz#37be5d36e1e06492221e68d474b1ac58e510cbd7"
+  integrity sha1-N75dNuHgZJIiHmjUdLGsWOUQy9c=
+  dependencies:
+    bindings "1.2.x"
+    nan "^2.0.5"
 
 bytes@0.2.1, bytes@~0.2.1:
   version "0.2.1"
@@ -99,6 +129,16 @@ ejs@~1.0.0:
   resolved "https://registry.yarnpkg.com/ejs/-/ejs-1.0.0.tgz#c9c60a48a46ee452fb32a71c317b95e5aa1fcb3d"
   integrity sha1-ycYKSKRu5FL7MqccMXuV5aofyz0=
 
+error-tojson@0.0.1:
+  version "0.0.1"
+  resolved "https://registry.yarnpkg.com/error-tojson/-/error-tojson-0.0.1.tgz#a7b1aa94ffc00e9078c2eba26e204bd87cf2cbb9"
+  integrity sha1-p7GqlP/ADpB4wuuibiBL2Hzyy7k=
+
+es6-promise@^4.0.5:
+  version "4.2.5"
+  resolved "https://registry.yarnpkg.com/es6-promise/-/es6-promise-4.2.5.tgz#da6d0d5692efb461e082c14817fe2427d8f5d054"
+  integrity sha512-n6wvpdE43VFtJq+lUDYDBFUwV8TZbuGXLV4D6wKafg13ldznKsyEvatubnmUe31zcvelSzOHF+XbaT+Bl9ObDg==
+
 express@~3.4.0:
   version "3.4.8"
   resolved "https://registry.yarnpkg.com/express/-/express-3.4.8.tgz#aa7a8986de07053337f4bc5ed9a6453d9cc8e2e1"
@@ -117,12 +157,31 @@ express@~3.4.0:
     range-parser "0.0.4"
     send "0.1.4"
 
+extend@^3.0.0:
+  version "3.0.2"
+  resolved "https://registry.yarnpkg.com/extend/-/extend-3.0.2.tgz#f8b1136b4071fbd8eb140aff858b1019ec2915fa"
+  integrity sha512-fjquC59cD7CyW6urNXK0FBufkZcoiGG80wTuPujX590cB5Ttln20E2UB4S/WARVqhXffZl2LNgS+gQdPIIim/g==
+
+freeice@^2.1.2:
+  version "2.2.2"
+  resolved "https://registry.yarnpkg.com/freeice/-/freeice-2.2.2.tgz#f66b3e0f67c2fda835161f76d4884881cde83be4"
+  integrity sha512-XNoIxDHufqPIBSLpp4IrFPnoc+hv/0RwdOGhIoggIDC2ZKf5r6OoixbeoFJSmZOAq2aYiEUArhuQ8zVVrM5C4w==
+  dependencies:
+    normalice "^1.0.0"
+
 fresh@0.2.0:
   version "0.2.0"
   resolved "https://registry.yarnpkg.com/fresh/-/fresh-0.2.0.tgz#bfd9402cf3df12c4a4c310c79f99a3dde13d34a7"
   integrity sha1-v9lALPPfEsSkwxDHn5mj3eE9NKc=
 
-inherits@~2.0.1:
+hark@1.1.3:
+  version "1.1.3"
+  resolved "https://registry.yarnpkg.com/hark/-/hark-1.1.3.tgz#679cb786c48f2b197768c89d7a3e0d8ac626d558"
+  integrity sha1-Z5y3hsSPKxl3aMidej4NisYm1Vg=
+  dependencies:
+    wildemitter "^1.2.0"
+
+inherits@^2.0.1, inherits@^2.0.3, inherits@~2.0.1:
   version "2.0.3"
   resolved "https://registry.yarnpkg.com/inherits/-/inherits-2.0.3.tgz#633c2c83e3da42a502f52466022480f4208261de"
   integrity sha1-Yzwsg+PaQqUC9SRmAiSA9CCCYd4=
@@ -132,15 +191,90 @@ isarray@0.0.1:
   resolved "https://registry.yarnpkg.com/isarray/-/isarray-0.0.1.tgz#8a18acfca9a8f4177e09abfc6038939b05d1eedf"
   integrity sha1-ihis/Kmo9Bd+Cav8YDiTmwXR7t8=
 
+isbuffer@0.0.0:
+  version "0.0.0"
+  resolved "https://registry.yarnpkg.com/isbuffer/-/isbuffer-0.0.0.tgz#38c146d9df528b8bf9b0701c3d43cf12df3fc39b"
+  integrity sha1-OMFG2d9Si4v5sHAcPUPPEt8/w5s=
+
 keypress@0.1.x:
   version "0.1.0"
   resolved "https://registry.yarnpkg.com/keypress/-/keypress-0.1.0.tgz#4a3188d4291b66b4f65edb99f806aa9ae293592a"
   integrity sha1-SjGI1CkbZrT2XtuZ+AaqmuKTWSo=
 
+kurento-browser-extensions@*:
+  version "0.0.2"
+  resolved "https://registry.yarnpkg.com/kurento-browser-extensions/-/kurento-browser-extensions-0.0.2.tgz#4b2bac2b820aa004b724acf6ae3eb4dfe8126abb"
+  integrity sha1-SyusK4IKoAS3JKz2rj603+gSars=
+
+"kurento-client-core@github:Kurento/kurento-client-core-js#master":
+  version "6.9.0-dev"
+  resolved "https://codeload.github.com/Kurento/kurento-client-core-js/tar.gz/e125435129c3af9ba6a29709abed932eb6e42fd5"
+
+"kurento-client-elements@github:Kurento/kurento-client-elements-js#master":
+  version "6.9.0-dev"
+  resolved "https://codeload.github.com/Kurento/kurento-client-elements-js/tar.gz/b0c2e3e37c669a7cc273ff35a3a3e5907b471336"
+
+"kurento-client-filters@github:Kurento/kurento-client-filters-js#master":
+  version "6.9.0-dev"
+  resolved "https://codeload.github.com/Kurento/kurento-client-filters-js/tar.gz/bb8dcddab23d947f80135143ad2b39d7ecd98081"
+
+kurento-client@^6.8.0:
+  version "6.8.0"
+  resolved "https://registry.yarnpkg.com/kurento-client/-/kurento-client-6.8.0.tgz#889e3fd730de35451d3e2ff819280898e1dd4f33"
+  integrity sha512-o2te002Pq5l3/lynhJpt0MPXABOrRKpUFWlPUb9iMZTVugxkN5RlgSS0YOgPPwqEbNqxEi1V0SljAV9WFFMZKg==
+  dependencies:
+    async "^2.0.1"
+    error-tojson "0.0.1"
+    es6-promise "^4.0.5"
+    extend "^3.0.0"
+    inherits "^2.0.3"
+    kurento-client-core Kurento/kurento-client-core-js#master
+    kurento-client-elements Kurento/kurento-client-elements-js#master
+    kurento-client-filters Kurento/kurento-client-filters-js#master
+    kurento-jsonrpc Kurento/kurento-jsonrpc-js#master
+    minimist "^1.2.0"
+    promise "7.1.1"
+    promisecallback "0.0.4"
+    reconnect-ws KurentoForks/reconnect-ws#master
+
+"kurento-jsonrpc@github:Kurento/kurento-jsonrpc-js#master":
+  version "6.8.1-dev"
+  resolved "https://codeload.github.com/Kurento/kurento-jsonrpc-js/tar.gz/b295874cbbb0f400374054f270cb557ecdfd2faa"
+  dependencies:
+    bufferutil "1.2.x"
+    inherits "^2.0.1"
+    utf-8-validate "1.2.x"
+    ws "^1.1.1"
+
+kurento-utils@^6.8.0:
+  version "6.8.0"
+  resolved "https://registry.yarnpkg.com/kurento-utils/-/kurento-utils-6.8.0.tgz#2310a4eceb629cb1922f40b6eace91867cbcb6dd"
+  integrity sha512-j7knYlp5wx45tU1CBcG2PNJGwO0N4Lhq1UiTfdQ+RG1ePIS0YWDmcPuDLZopg5/IebfLJpvvMsGHV0hjU9AxPg==
+  dependencies:
+    freeice "^2.1.2"
+    hark "1.1.3"
+    inherits "^2.0.1"
+    merge "^1.2.0"
+    sdp-translator "^0.1.15"
+    ua-parser-js "^0.7.7"
+    uuid "~2.0.1"
+  optionalDependencies:
+    kurento-browser-extensions "*"
+
+lodash@^4.17.10:
+  version "4.17.11"
+  resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.11.tgz#b39ea6229ef607ecd89e2c8df12536891cac9b8d"
+  integrity sha512-cQKh8igo5QUhZ7lg38DYWAxMvjSAKG0A8wGSVimP07SIUEK2UO+arSRKbRZWtelMtN5V0Hkwh5ryOto/SshYIg==
+
 merge-descriptors@0.0.1:
   version "0.0.1"
   resolved "https://registry.yarnpkg.com/merge-descriptors/-/merge-descriptors-0.0.1.tgz#2ff0980c924cf81d0b5d1fb601177cb8bb56c0d0"
   integrity sha1-L/CYDJJM+B0LXR+2ARd8uLtWwNA=
+
+merge@^1.2.0:
+  version "1.2.1"
+  resolved "https://registry.yarnpkg.com/merge/-/merge-1.2.1.tgz#38bebf80c3220a8a487b6fcfb3941bb11720c145"
+  integrity sha512-VjFo4P5Whtj4vsLzsYBu5ayHhoHJ0UqNm7ibvShmbmoz7tGi0vXaoJbGdB+GmDMLUdg8DpQXEIeVDAe8MaABvQ==
 
 methods@0.1.0:
   version "0.1.0"
@@ -156,6 +290,11 @@ mime@~1.2.9:
   version "1.2.11"
   resolved "https://registry.yarnpkg.com/mime/-/mime-1.2.11.tgz#58203eed86e3a5ef17aed2b7d9ebd47f0a60dd10"
   integrity sha1-WCA+7Ybjpe8XrtK32evUfwpg3RA=
+
+minimist@^1.2.0:
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/minimist/-/minimist-1.2.0.tgz#a35008b20f41383eec1fb914f4cd5df79a264284"
+  integrity sha1-o1AIsg9BOD7sH7kU9M1d95omQoQ=
 
 minimist@~0.0.1:
   version "0.0.10"
@@ -180,10 +319,20 @@ multiparty@2.2.0:
     readable-stream "~1.1.9"
     stream-counter "~0.2.0"
 
+nan@^2.0.5:
+  version "2.11.1"
+  resolved "https://registry.yarnpkg.com/nan/-/nan-2.11.1.tgz#90e22bccb8ca57ea4cd37cc83d3819b52eea6766"
+  integrity sha512-iji6k87OSXa0CcrLl9z+ZiYSuR2o+c0bGuNmXdrhTQTakxytAFsC56SArGYoiHlJlFoHSnvmhpceZJaXkVuOtA==
+
 nan@~1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/nan/-/nan-1.0.0.tgz#ae24f8850818d662fcab5acf7f3b95bfaa2ccf38"
   integrity sha1-riT4hQgY1mL8q1rPfzuVv6oszzg=
+
+nan@~2.4.0:
+  version "2.4.0"
+  resolved "https://registry.yarnpkg.com/nan/-/nan-2.4.0.tgz#fb3c59d45fe4effe215f0b890f8adf6eb32d2232"
+  integrity sha1-+zxZ1F/k7/4hXwuJD4rfbrMtIjI=
 
 negotiator@0.3.0:
   version "0.3.0"
@@ -198,6 +347,11 @@ node-static@~0.7.1:
     colors ">=0.6.0"
     mime "^1.2.9"
     optimist ">=0.3.4"
+
+normalice@^1.0.0:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/normalice/-/normalice-1.0.1.tgz#03435c2eecd5631a6bca02da3930ec3e345a80f7"
+  integrity sha1-A0NcLuzVYxprygLaOTDsPjRagPc=
 
 optimist@>=0.3.4:
   version "0.6.1"
@@ -221,6 +375,18 @@ policyfile@0.0.4:
   version "0.0.4"
   resolved "https://registry.yarnpkg.com/policyfile/-/policyfile-0.0.4.tgz#d6b82ead98ae79ebe228e2daf5903311ec982e4d"
   integrity sha1-1rgurZiueeviKOLa9ZAzEeyYLk0=
+
+promise@7.1.1:
+  version "7.1.1"
+  resolved "https://registry.yarnpkg.com/promise/-/promise-7.1.1.tgz#489654c692616b8aa55b0724fa809bb7db49c5bf"
+  integrity sha1-SJZUxpJha4qlWwck+oCbt9tJxb8=
+  dependencies:
+    asap "~2.0.3"
+
+promisecallback@0.0.4:
+  version "0.0.4"
+  resolved "https://registry.yarnpkg.com/promisecallback/-/promisecallback-0.0.4.tgz#b934f13c04e443622b4d66de4e42ea5f6ce66e74"
+  integrity sha1-uTTxPATkQ2IrTWbeTkLqX2zmbnQ=
 
 qs@0.6.6:
   version "0.6.6"
@@ -249,10 +415,35 @@ readable-stream@~1.1.8, readable-stream@~1.1.9:
     isarray "0.0.1"
     string_decoder "~0.10.x"
 
+reconnect-core@KurentoForks/reconnect-core:
+  version "1.0.0"
+  resolved "https://codeload.github.com/KurentoForks/reconnect-core/tar.gz/921d43e91578abb2fb2613f585c010c1939cf734"
+  dependencies:
+    backoff "~2.3.0"
+
+"reconnect-ws@github:KurentoForks/reconnect-ws#master":
+  version "0.0.0"
+  resolved "https://codeload.github.com/KurentoForks/reconnect-ws/tar.gz/f287385d75861654528c352e60221f95c9209f8a"
+  dependencies:
+    reconnect-core KurentoForks/reconnect-core
+    websocket-stream "~0.5.1"
+
 redis@0.7.3:
   version "0.7.3"
   resolved "https://registry.yarnpkg.com/redis/-/redis-0.7.3.tgz#ee57b7a44d25ec1594e44365d8165fa7d1d4811a"
   integrity sha1-7le3pE0l7BWU5ENl2BZfp9HUgRo=
+
+sdp-transform@1.5.*:
+  version "1.5.3"
+  resolved "https://registry.yarnpkg.com/sdp-transform/-/sdp-transform-1.5.3.tgz#8a6d0f8bd699ce3abc310ba4b1cde598928a0816"
+  integrity sha1-im0Pi9aZzjq8MQuksc3lmJKKCBY=
+
+sdp-translator@^0.1.15:
+  version "0.1.24"
+  resolved "https://registry.yarnpkg.com/sdp-translator/-/sdp-translator-0.1.24.tgz#83fb8d634a63f15cd9944237dd90bd406906c6f3"
+  integrity sha1-g/uNY0pj8VzZlEI33ZC9QGkGxvM=
+  dependencies:
+    sdp-transform "1.5.*"
 
 send@0.1.4:
   version "0.1.4"
@@ -297,10 +488,20 @@ string_decoder@~0.10.x:
   resolved "https://registry.yarnpkg.com/string_decoder/-/string_decoder-0.10.31.tgz#62e203bc41766c6c28c9fc84301dab1c5310fa94"
   integrity sha1-YuIDvEF2bGwoyfyEMB2rHFMQ+pQ=
 
+through@~2.3.4:
+  version "2.3.8"
+  resolved "https://registry.yarnpkg.com/through/-/through-2.3.8.tgz#0dd4c9ffaabc357960b1b724115d7e0e86a2e1f5"
+  integrity sha1-DdTJ/6q8NXlgsbckEV1+Doai4fU=
+
 tinycolor@0.x:
   version "0.0.1"
   resolved "https://registry.yarnpkg.com/tinycolor/-/tinycolor-0.0.1.tgz#320b5a52d83abb5978d81a3e887d4aefb15a6164"
   integrity sha1-MgtaUtg6u1l42Bo+iH1K77FaYWQ=
+
+ua-parser-js@^0.7.7:
+  version "0.7.19"
+  resolved "https://registry.yarnpkg.com/ua-parser-js/-/ua-parser-js-0.7.19.tgz#94151be4c0a7fb1d001af7022fdaca4642659e4b"
+  integrity sha512-T3PVJ6uz8i0HzPxOF9SWzWAlfN/DavlpQqepn22xgve/5QecC+XMCAtmUNnY7C9StehaV6exjUCI801lOI7QlQ==
 
 uglify-js@1.2.5:
   version "1.2.5"
@@ -312,12 +513,44 @@ uid2@0.0.3:
   resolved "https://registry.yarnpkg.com/uid2/-/uid2-0.0.3.tgz#483126e11774df2f71b8b639dcd799c376162b82"
   integrity sha1-SDEm4Rd03y9xuLY53NeZw3YWK4I=
 
+ultron@1.0.x:
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/ultron/-/ultron-1.0.2.tgz#ace116ab557cd197386a4e88f4685378c8b2e4fa"
+  integrity sha1-rOEWq1V80Zc4ak6I9GhTeMiy5Po=
+
+utf-8-validate@1.2.x:
+  version "1.2.2"
+  resolved "https://registry.yarnpkg.com/utf-8-validate/-/utf-8-validate-1.2.2.tgz#8bb871a4741e085c70487ca7acdbd7d6d36029eb"
+  integrity sha1-i7hxpHQeCFxwSHynrNvX1tNgKes=
+  dependencies:
+    bindings "~1.2.1"
+    nan "~2.4.0"
+
+uuid@~2.0.1:
+  version "2.0.3"
+  resolved "https://registry.yarnpkg.com/uuid/-/uuid-2.0.3.tgz#67e2e863797215530dff318e5bf9dcebfd47b21a"
+  integrity sha1-Z+LoY3lyFVMN/zGOW/nc6/1Hsho=
+
+websocket-stream@~0.5.1:
+  version "0.5.1"
+  resolved "https://registry.yarnpkg.com/websocket-stream/-/websocket-stream-0.5.1.tgz#622cd1f0566fb84ce0a4d6f854526f3dc4d70e48"
+  integrity sha1-YizR8FZvuEzgpNb4VFJvPcTXDkg=
+  dependencies:
+    isbuffer "0.0.0"
+    through "~2.3.4"
+    ws "~0.4.30"
+
+wildemitter@^1.2.0:
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/wildemitter/-/wildemitter-1.2.0.tgz#29dd3a72d699c3e279dd021c3cd2150b82c9a211"
+  integrity sha1-Kd06ctaZw+J53QIcPNIVC4LJohE=
+
 wordwrap@~0.0.2:
   version "0.0.3"
   resolved "https://registry.yarnpkg.com/wordwrap/-/wordwrap-0.0.3.tgz#a3d5da6cd5c0bc0008d37234bbaf1bed63059107"
   integrity sha1-o9XabNXAvAAI03I0u68b7WMFkQc=
 
-ws@0.4.x:
+ws@0.4.x, ws@~0.4.30:
   version "0.4.32"
   resolved "https://registry.yarnpkg.com/ws/-/ws-0.4.32.tgz#787a6154414f3c99ed83c5772153b20feb0cec32"
   integrity sha1-eHphVEFPPJntg8V3IVOyD+sM7DI=
@@ -326,6 +559,14 @@ ws@0.4.x:
     nan "~1.0.0"
     options ">=0.0.5"
     tinycolor "0.x"
+
+ws@^1.1.1:
+  version "1.1.5"
+  resolved "https://registry.yarnpkg.com/ws/-/ws-1.1.5.tgz#cbd9e6e75e09fc5d2c90015f21f0c40875e0dd51"
+  integrity sha512-o3KqipXNUdS7wpQzBHSe180lBGO60SoK0yVo3CYJgb2MkobuWuBX6dhkYP5ORCLd55y+SaflMOV5fqAB53ux4w==
+  dependencies:
+    options ">=0.0.5"
+    ultron "1.0.x"
 
 xmlhttprequest@1.4.2:
   version "1.4.2"
