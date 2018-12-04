@@ -1,6 +1,6 @@
 'use strict';
 
-let MeetingMesh = function (socketioHost) {
+let MeetingMesh = function (socketioHost, __id) {
     let exports = {};
 
     let _isInitiator = false;
@@ -25,12 +25,10 @@ let MeetingMesh = function (socketioHost) {
     let _apc = {};
     let _sendChannel = {};
     let _room;
-    let _myID;
+    let _myID = __id;
     let _onRemoteVideoCallback;
     let _onLocalVideoCallback;
-    let _onChatMessageCallback;
-    let _onChatReadyCallback;
-    let _onChatNotReadyCallback;
+    let _onDataChannelMessageCallback;
     let _onParticipantHangupCallback;
     let _host = socketioHost;
 
@@ -39,15 +37,16 @@ let MeetingMesh = function (socketioHost) {
     ////////////////////////////////////////////////
     /**
   *
-  * Add callback function to be called when a chat message is available.
   *
   * @param name of the room to join
   */
     function joinRoom(name) {
         _room = name;
 
-        _myID = generateID();
-        console.log('Generated ID: ' + _myID);
+        if (!_myID) {
+            _myID = generateID();
+            console.log('Generated ID: ' + _myID);
+        }
 
         // Open up a default communication channel
         initDefaultChannel();
@@ -65,21 +64,6 @@ let MeetingMesh = function (socketioHost) {
 
         window.onbeforeunload = function (e) {
             _defaultChannel.emit('message', { type: 'bye', from: _myID });
-        }
-    }
-
-    /**
-	 *
-	 * Send a chat message to all channels.
-	 *
-	 * @param message String message to be send
-	 */
-    function sendChatMessage(message) {
-        console.log("Sending " + message)
-        for (let channel in _sendChannel) {
-            if (_sendChannel.hasOwnProperty(channel)) {
-                _sendChannel[channel].send(message);
-            }
         }
     }
 
@@ -133,34 +117,13 @@ let MeetingMesh = function (socketioHost) {
 
     /**
 	 *
-	 * Add callback function to be called when chat is available.
-	 *
-	 * @parama callback function of type function()
-	 */
-    function onChatReady(callback) {
-        _onChatReadyCallback = callback;
-    }
-
-    /**
-	 *
-	 * Add callback function to be called when chat is no more available.
-	 *
-	 * @parama callback function of type function()
-	 */
-    function onChatNotReady(callback) {
-        _onChatNotReadyCallback = callback;
-    }
-
-    /**
-	 *
-	 * Add callback function to be called when a chat message is available.
+	 * Add callback function to be called when a data channel message is available.
 	 *
 	 * @parama callback function of type function(message)
 	 */
-    function onChatMessage(callback) {
-        _onChatMessageCallback = callback;
+    function onDataChannelMessage(callback) {
+        _onDataChannelMessageCallback = callback;
     }
-
     /**
 	 *
 	 * Add callback function to be called when a a participant left the conference.
@@ -301,7 +264,7 @@ let MeetingMesh = function (socketioHost) {
         try {
             // Reliable Data Channels not yet supported in Chrome
             _sendChannel[participantId] = _opc[participantId].createDataChannel("sendDataChannel", { reliable: false });
-            _sendChannel[participantId].onmessage = handleMessage;
+            _sendChannel[participantId].onmessage = handleDataChannel;
             console.log('Created send data channel');
         } catch (e) {
             alert('Failed to create data channel. ' + 'You need Chrome M25 or later with RtpDataChannel enabled');
@@ -339,7 +302,6 @@ let MeetingMesh = function (socketioHost) {
 
         let onSuccess = function (channel) {
             return function (sessionDescription) {
-                87
                 // Set Opus as the preferred codec in SDP if Opus is present.
                 sessionDescription.sdp = preferOpus(sessionDescription.sdp);
 
@@ -424,15 +386,15 @@ let MeetingMesh = function (socketioHost) {
         return function (event) {
             console.log('Receive Channel Callback');
             _sendChannel[id] = event.channel;
-            _sendChannel[id].onmessage = handleMessage;
+            _sendChannel[id].onmessage = handleDataChannel;
             _sendChannel[id].onopen = handleReceiveChannelStateChange(id);
             _sendChannel[id].onclose = handleReceiveChannelStateChange(id);
         }
     }
 
-    function handleMessage(event) {
+    function handleDataChannel(event) {
         console.log('Received message: ' + event.data);
-        _onChatMessageCallback(event.data);
+        _onDataChannelMessageCallback(event.data);
     }
 
     function handleSendChannelStateChange(participantId) {
@@ -441,8 +403,8 @@ let MeetingMesh = function (socketioHost) {
             console.log('Send channel state is: ' + readyState);
 
             // check if we have at least one open channel before we set hat ready to false.
-            let open = checkIfOpenChannel();
-            enableMessageInterface(open);
+            // let open = checkIfOpenChannel();
+            // enableMessageInterface(open);
         }
     }
 
@@ -452,8 +414,8 @@ let MeetingMesh = function (socketioHost) {
             console.log('Receive channel state is: ' + readyState);
 
             // check if we have at least one open channel before we set hat ready to false.
-            let open = checkIfOpenChannel();
-            enableMessageInterface(open);
+            // let open = checkIfOpenChannel();
+            // enableMessageInterface(open);
         }
     }
 
@@ -469,14 +431,6 @@ let MeetingMesh = function (socketioHost) {
         }
 
         return open;
-    }
-
-    function enableMessageInterface(shouldEnable) {
-        if (shouldEnable) {
-            _onChatReadyCallback();
-        } else {
-            _onChatNotReadyCallback();
-        }
     }
 
     // ERROR HANDLERS
@@ -591,10 +545,7 @@ let MeetingMesh = function (socketioHost) {
     exports.toggleVideo = toggleVideo;
     exports.onLocalVideo = onLocalVideo;
     exports.onRemoteVideo = onRemoteVideo;
-    exports.onChatReady = onChatReady;
-    exports.onChatNotReady = onChatNotReady;
-    exports.onChatMessage = onChatMessage;
-    exports.sendChatMessage = sendChatMessage;
+    exports.onDataChannelMessage = onDataChannelMessage;
     exports.onParticipantHangup = onParticipantHangup;
     return exports;
 

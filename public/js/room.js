@@ -7,6 +7,14 @@ $(document).ready(function () {
 	/////////////////////////////////
 	// CREATE MEETING
 	/////////////////////////////////
+
+	// setupMesh(room);
+
+	setupSfu(room);
+
+}); // end of document.ready
+
+function setupMesh(room) {
 	let meeting_mesh = new MeetingMesh(host);
 
 	meeting_mesh.onLocalVideo(function (stream) {
@@ -23,28 +31,50 @@ $(document).ready(function () {
 
 		$("#localVideo").prop('muted', true);
 
-	}
-	);
+	});
 
 	meeting_mesh.onRemoteVideo(function (stream, participantID) {
 		addRemoteVideo(stream, participantID);
-	}
-	);
+	});
 
 	meeting_mesh.onParticipantHangup(function (participantID) {
 		// Someone just left the meeting. Remove the participants video
 		removeRemoteVideo(participantID);
-	}
-	);
-
-	meeting_mesh.onChatReady(function () {
-		console.log("Chat is ready");
-	}
-	);
+	});
 
 	meeting_mesh.joinRoom(room);
+}
 
-}); // end of document.ready
+function setupSfu(room) {
+	let meeting_sfu = new MeetingSfu(host);
+
+	meeting_sfu.onLocalVideo(function (stream) {
+		//alert(stream.getVideoTracks().length);
+		document.querySelector('#localVideo').src = window.URL.createObjectURL(stream);
+
+		$("#micMenu").on("click", function callback(e) {
+			meeting_sfu.toggleMic();
+		});
+
+		$("#videoMenu").on("click", function callback(e) {
+			meeting_sfu.toggleVideo();
+		});
+
+		$("#localVideo").prop('muted', true);
+
+	});
+
+	meeting_sfu.onRemoteVideo(function (stream, participantID) {
+		addRemoteVideo(stream, participantID);
+	});
+
+	meeting_sfu.onParticipantHangup(function (participantID) {
+		// Someone just left the meeting. Remove the participants video
+		removeRemoteVideo(participantID);
+	});
+
+	meeting_sfu.joinRoom(room);
+}
 
 function addRemoteVideo(stream, participantID) {
 	let $videoBox = $("<div class='videoWrap' id='" + participantID + "'></div>");
