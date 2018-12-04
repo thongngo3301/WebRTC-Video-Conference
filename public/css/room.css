@@ -156,6 +156,7 @@ body {
 
 #chat-input #chat-submit-icon {
     flex-basis: 15%;
+    cursor: pointer;
 }   
 
 #chat-input #chat-submit-icon svg {

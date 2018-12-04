@@ -77,6 +77,10 @@ $(document).ready(() => {
         </div>
     </div>`)
                 document.getElementById('input-message').value = "";
+                document.getElementById('input-message').value = "";
+                var e = document.getElementById("chat-list").childNodes;
+                console.log(e);
+                e[e.length - 1].scrollIntoView();
             }
         }
     });
@@ -96,7 +100,9 @@ $(document).ready(() => {
         </div>
     </div>`)
             document.getElementById('input-message').value = "";
-
+            var e = document.getElementById("chat-list").childNodes;
+            console.log(e);
+            e[e.length - 1].scrollIntoView();
         }
 
     })
