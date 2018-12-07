@@ -30,9 +30,9 @@ function setupMesh(room) {
 		});
 
 		$("#localVideo").prop('muted', true);
-
+		
 	});
-
+		
 	meeting_mesh.onRemoteVideo(function (stream, participantID) {
 		addRemoteVideo(stream, participantID);
 	});
@@ -134,4 +134,21 @@ function adjustVideoSize() {
 		$("#localVideoWrap").width('auto');
 		$('#videosWrapper').find("br").remove();
 	}
+}
+
+// Switch
+function mySwitch(){
+	var t = document.getElementById("myCanvas");
+	var video = document.getElementById("localVideo");
+	var ctx = t.getContext('2d');
+	var img = new Image();
+	img.onload = function(){
+		console.log(ctx);
+		// ctx.drawImage(img,0,0, video.width,video.height, 0,0, video.width,video.height);
+		ctx.drawImage(img,0,0,img.width, img.height, 0, 0, t.width, t.height);
+		// ctx.drawImage(video,0,0,video.width, video.height, 0, 0, t.width, t.height);
+		console.log("runn....");
+		// alert(t.toDataURL('/picture/cadre_halloween.png'));
+	};
+	img.src = "/picture/cadre_halloween.png";
 }

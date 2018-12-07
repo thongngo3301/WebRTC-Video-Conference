@@ -15,6 +15,7 @@
 	<script src='/js/messageHandle.js'></script>
 	<link rel="stylesheet" type="text/css" href="/css/room.css" media="screen" />
 	<title>Video Conference</title>
+	
 </head>
 
 <body>
@@ -25,6 +26,7 @@
 					<div id="videosWrapper">
 						<div id="localVideoWrap" class='videoWrap'>
 							<video class="videoBox" id="localVideo" autoplay></video>
+							<canvas id="myCanvas"></canvas>
 						</div>
 					</div>
 				</div>
@@ -32,6 +34,7 @@
 			<div>
 				<button id="micMenu">Toggle Microphone</button>
 				<button id="videoMenu">Toggle Video</button>
+				<button onclick="mySwitch()">Switch</button>
 			</div>
 		</div>
 		<div id="chat-container">
