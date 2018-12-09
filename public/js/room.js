@@ -48,24 +48,21 @@ function setupMesh(room) {
 function setupSfu(room) {
 	let meeting_sfu = new MeetingSfu(host);
 
-	meeting_sfu.onLocalVideo(function (stream) {
-		//alert(stream.getVideoTracks().length);
-		document.querySelector('#localVideo').src = window.URL.createObjectURL(stream);
+	// meeting_sfu.onLocalVideo(function () {
+	// 	$("#micMenu").on("click", function callback(e) {
+	// 		meeting_sfu.toggleMic();
+	// 	});
 
-		$("#micMenu").on("click", function callback(e) {
-			meeting_sfu.toggleMic();
-		});
+	// 	$("#videoMenu").on("click", function callback(e) {
+	// 		meeting_sfu.toggleVideo();
+	// 	});
 
-		$("#videoMenu").on("click", function callback(e) {
-			meeting_sfu.toggleVideo();
-		});
+	// 	$("#localVideo").prop('muted', true);
 
-		$("#localVideo").prop('muted', true);
+	// });
 
-	});
-
-	meeting_sfu.onRemoteVideo(function (stream, participantID) {
-		addRemoteVideo(stream, participantID);
+	meeting_sfu.onRemoteVideo(function (participantID) {
+		addRemoteVideo(null, participantID);
 	});
 
 	meeting_sfu.onParticipantHangup(function (participantID) {
@@ -78,8 +75,10 @@ function setupSfu(room) {
 
 function addRemoteVideo(stream, participantID) {
 	let $videoBox = $("<div class='videoWrap' id='" + participantID + "'></div>");
-	let $video = $("<video class='videoBox' autoplay></video>");
-	$video.attr({ "src": window.URL.createObjectURL(stream), "autoplay": "autoplay" });
+	let $video = $(`<video class='videoBox' id="video-${participantID}" autoplay></video>`);
+	if (stream) {
+		$video.attr({ "src": window.URL.createObjectURL(stream), "autoplay": "autoplay" });
+	}
 	$videoBox.append($video);
 	$("#videosWrapper").append($videoBox);
 

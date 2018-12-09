@@ -18,7 +18,7 @@ const serverPort = 8443;
 ////////////////////////////////////////////////
 // LOCAL
 // const serverIpAddress = '0.0.0.0';
-// const socketIoServer = '192.168.15.140';
+// const socketIoServer = 'https://localhost';
 const kurento_uri = 'ws://192.168.0.20:8888/kurento';
 ////////////////////////////////////////////////
 
@@ -100,7 +100,7 @@ io.sockets.on('connection', function (socket) {
 			case 'offer':
 				kurento(kurento_uri, (error, kurentoClient) => {
 					if (error) {
-						console.log(error);
+						console.error(error);
 					}
 					else {
 						kurentoClient.create('MediaPipeline', (error, pipeline) => {
@@ -109,18 +109,18 @@ io.sockets.on('connection', function (socket) {
 								socket.webRtcEndpoint = webRtcEndpoint;
 								// Relay icecandidate from kurento server to client
 								webRtcEndpoint.on('OnIceCandidate', event => {
+									let candidate = kurento.getComplexType('IceCandidate')(event.candidate);
 									socket.emit('kms2cli', {
 										type: 'candidate',
-										label: event.candidate.sdpMLineIndex,
-										id: event.candidate.sdpMid,
-										candidate: event.candidate.candidate
+										candidate: candidate
 									});
 								});
 
 								// received sdpOffer and response sdpAnswer
-								webRtcEndpoint.processOffer(JSON.stringify(message.sdp.sdp), (error, sdpAnswer) => {
+								// console.log('offer sdp', message.sdp);
+								webRtcEndpoint.processOffer(message.sdp, (error, sdpAnswer) => {
 									if (error) {
-										console.log(error);
+										console.error(error);
 									}
 									else {
 										// 2
@@ -129,12 +129,13 @@ io.sockets.on('connection', function (socket) {
 											sdp: sdpAnswer
 										});
 									}
-									// Search icecandidate available
-									webRtcEndpoint.gatherCandidates(error => {
-										if (error) {
-											console.log(error);
-										}
-									});
+								});
+								// Search icecandidate available
+								webRtcEndpoint.gatherCandidates(error => {
+									if (error) {
+										console.error(error);
+										return;
+									}
 								});
 
 								io.sockets.clients(socket.room).forEach(client => {
@@ -144,20 +145,19 @@ io.sockets.on('connection', function (socket) {
 										socket.pipeline.create('WebRtcEndpoint', (error, webRtcEndpoint) => {
 											client.streamInput[socket.participantID] = webRtcEndpoint;
 											webRtcEndpoint.on('OnIceCandidate', event => {
-												client.emit('kms2cli', {
+												let candidate = kurento.getComplexType('IceCandidate')(event.candidate);
+												socket.emit('kms2cli', {
 													type: 'candidate',
-													label: event.candidate.sdpMLineIndex,
-													id: event.candidate.sdpMid,
-													candidate: event.candidate.candidate,
+													candidate: candidate,
 													from: client.participantID
 												});
 											});
 											socket.webRtcEndpoint.connect(webRtcEndpoint, error => {
-												console.log(error);
+												console.error(error);
 											});
 											webRtcEndpoint.generateOffer((error, sdp) => {
 												if (error) {
-													console.log(error);
+													console.error(error);
 												}
 												else {
 													client.emit('kms2cli', {
@@ -166,37 +166,36 @@ io.sockets.on('connection', function (socket) {
 														from: socket.participantID
 													});
 												}
-												webRtcEndpoint.gatherCandidates(error => {
-													console.log(error);
-												});
 											})
+											webRtcEndpoint.gatherCandidates(error => {
+												console.error(error);
+											});
 										});
-
+									} else {
 										// new user as viewer
 										// 3
 										client.pipeline.create('WebRtcEndpoint', (error, webRtcEndpoint) => {
 											socket.streamInput[client.participantID] = webRtcEndpoint;
 											webRtcEndpoint.on('OnIceCandidate', event => {
+												let candidate = kurento.getComplexType('IceCandidate')(event.candidate);
 												socket.emit('kms2cli', {
 													type: 'candidate',
-													label: event.candidate.sdpMLineIndex,
-													id: event.candidate.sdpMid,
-													candidate: event.candidate.candidate,
+													candidate: candidate,
 													from: client.participantID
 												});
 											});
 											client.webRtcEndpoint.connect(webRtcEndpoint, error => {
-												console.log(error);
-											})
+												console.error(error);
+											});
 											webRtcEndpoint.generateOffer((error, sdp) => {
 												socket.emit('kms2cli', {
 													type: 'offer',
 													sdp: sdp,
 													from: client.participantID
 												});
-												webRtcEndpoint.gatherCandidates(error => {
-													console.log(error);
-												});
+											});
+											webRtcEndpoint.gatherCandidates(error => {
+												console.error(error);
 											});
 										});
 									}
@@ -206,11 +205,20 @@ io.sockets.on('connection', function (socket) {
 					}
 				});
 				break;
+			case 'answer':
+				io.sockets.clients(socket.room).forEach(client => {
+					client.streamInput[client.participantID].processAnswer(message.sdp);
+				});
+				// if (socket.participantID == message.from) {
+				// 	console.log('CAC');
+				// 	socket.webRtcEndpoint.processAnswer(message.sdp);
+				// }
+				break;
 			case 'candidate':
-				if (message.from == socket.participantID) {
+				if (message.from == socket.participantID && socket.webRtcEndpoint) {
 					socket.webRtcEndpoint.addIceCandidate(message.candidate);
 				}
-				else {
+				else if (socket.streamInput[message.from]) {
 					socket.streamInput[message.from].addIceCandidate(message.candidate);
 				}
 				break;

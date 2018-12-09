@@ -32,14 +32,10 @@ let MeetingSfu = function (socketioHost, __id) {
     let _onParticipantHangupCallback;
     let _host = socketioHost;
 
-    ////////////////////////////////////////////////
-    // PUBLIC FUNCTIONS
-    ////////////////////////////////////////////////
-    /**
-  *
-  *
-  * @param name of the room to join
-  */
+    let webRtcPeerSender = null;
+    let webRtcPeerReceivers = {};
+    let _localVideo = document.getElementById('localVideo');
+
     function joinRoom(name) {
         _room = name;
 
@@ -48,7 +44,9 @@ let MeetingSfu = function (socketioHost, __id) {
             console.log('Generated ID: ' + _myID);
         }
 
-        // Open up a default communication channel
+        // Get local media data
+        // getUserMedia(_constraints, handleUserMedia, handleUserMediaError);
+
         initDefaultChannel();
 
         if (_room !== '') {
@@ -56,22 +54,11 @@ let MeetingSfu = function (socketioHost, __id) {
             _defaultChannel.emit('create_or_join', { room: _room, from: _myID });
         }
 
-        // Open up a private communication channel
-        // initPrivateChannel();
-
-        // Get local media data
-        getUserMedia(_constraints, handleUserMedia, handleUserMediaError);
-
         window.onbeforeunload = function (e) {
             _defaultChannel.emit('message', { type: 'bye', from: _myID });
         }
     }
 
-    /**
-	 *
-	 * Toggle microphone availability.
-	 *
-	 */
     function toggleMic() {
         let tracks = _localStream.getTracks();
         for (let i = 0; i < tracks.length; i++) {
@@ -81,11 +68,6 @@ let MeetingSfu = function (socketioHost, __id) {
         }
     }
 
-    /**
-	 *
-	 * Toggle video availability.
-	 *
-	 */
     function toggleVideo() {
         let tracks = _localStream.getTracks();
         for (let i = 0; i < tracks.length; i++) {
@@ -95,48 +77,21 @@ let MeetingSfu = function (socketioHost, __id) {
         }
     }
 
-	/**
-	 *
-	 * Add callback function to be called when remote video is available.
-	 *
-	 * @param callback of type function(stream, participantID)
-	 */
-    function onRemoteVideo(callback) {
+	function onRemoteVideo(callback) {
         _onRemoteVideoCallback = callback;
     }
 
-	/**
-	 *
-	 * Add callback function to be called when local video is available.
-	 *
-	 * @param callback function of type function(stream)
-	 */
-    function onLocalVideo(callback) {
+	function onLocalVideo(callback) {
         _onLocalVideoCallback = callback;
     }
 
-    /**
-	 *
-	 * Add callback function to be called when a data channel message is available.
-	 *
-	 * @parama callback function of type function(message)
-	 */
     function onDataChannelMessage(callback) {
         _onDataChannelMessageCallback = callback;
     }
-    /**
-	 *
-	 * Add callback function to be called when a a participant left the conference.
-	 *
-	 * @parama callback function of type function(participantID)
-	 */
+
     function onParticipantHangup(callback) {
         _onParticipantHangupCallback = callback;
     }
-
-    ////////////////////////////////////////////////
-    // INIT FUNCTIONS
-    ////////////////////////////////////////////////
 
     function initDefaultChannel() {
         _defaultChannel = openSignalingChannel('');
@@ -155,35 +110,13 @@ let MeetingSfu = function (socketioHost, __id) {
         });
 
         _defaultChannel.on('create_or_join_success', function (message) {
-            // let partID = message.from;
             createUplinkOffer();
         })
 
         _defaultChannel.on('message', function (message) {
             console.log('Client received message:', message);
             if (message.type === 'newparticipant') {
-                // let partID = message.from;
-
-                // Open a new communication channel to the new participant
-                // _offerChannels[partID] = openSignalingChannel(partID);
-
-                // Wait for answers (to offers) from the new participant
-                // _offerChannels[partID].on('message', function (msg) {
-                //     if (msg.dest === _myID) {
-                //         if (msg.type === 'answer') {
-                //             _opc[msg.from].setRemoteDescription(new RTCSessionDescription(msg.snDescription),
-                //                 setRemoteDescriptionSuccess,
-                //                 setRemoteDescriptionError);
-                //         } else if (msg.type === 'candidate') {
-                //             let candidate = new RTCIceCandidate({ sdpMLineIndex: msg.label, candidate: msg.candidate });
-                //             console.log('got ice candidate from ' + msg.from);
-                //             _opc[msg.from].addIceCandidate(candidate, addIceCandidateSuccess, addIceCandidateError);
-                //         }
-                //     }
-                // });
-
-                // Send an offer to the new participant
-                // createOffer(partID);
+                return;
             } else if (message.type === 'bye') {
                 hangup(message.from);
             }
@@ -192,61 +125,34 @@ let MeetingSfu = function (socketioHost, __id) {
         _defaultChannel.on('kms2cli', function (message) {
             switch (message.type) {
                 case 'offer':
-                    createDownlinkAnswer(message.sdp, message.from);
+                    if (message.from && message.from != _myID) {
+                        createDownlinkAnswer(message.sdp, message.from);
+                    }
                     break;
                 case 'answer':
-                    _opc.setRemoteDescription(new RTCSessionDescription(message.sdp), setRemoteDescriptionSuccess, setRemoteDescriptionError);
+                    if (!message.sdp) {
+                        console.error("No sdpAnswer from server");
+                        return;
+                    }
+                    webRtcPeerSender.processAnswer(message.sdp);
                     break;
                 case 'candidate':
-                    let candidate = new RTCIceCandidate({ sdpMLineIndex: message.label, candidate: message.candidate });
-                    if (message.from == _myID) {
-                        _opc.addIceCandidate(candidate, addIceCandidateSuccess, addIceCandidateError);
+                    if (message.from && message.from != _myID && webRtcPeerReceivers[message.from]) {
+                        webRtcPeerReceivers[message.from].addIceCandidate(message.candidate);
                     } else {
-                        _apc[message.from].addIceCandidate(candidate, addIceCandidateSuccess, addIceCandidateError);
+                        webRtcPeerSender.addIceCandidate(message.candidate);
                     }
+                    // webRtcPeer.addIceCandidate(message.candidate);
                     break;
             }
         });
     }
 
-    // function initPrivateChannel() {
-    //     // Open a private channel (namespace = _myID) to receive offers
-    //     _privateAnswerChannel = openSignalingChannel(_myID);
-
-    //     // Wait for offers or ice candidates
-    //     _privateAnswerChannel.on('message', function (message) {
-    //         if (message.dest === _myID) {
-    //             if (message.type === 'offer') {
-    //                 let to = message.from;
-    //                 createAnswer(message, _privateAnswerChannel, to);
-    //             } else if (message.type === 'candidate') {
-    //                 let candidate = new RTCIceCandidate({ sdpMLineIndex: message.label, candidate: message.candidate });
-    //                 _apc[message.from].addIceCandidate(candidate, addIceCandidateSuccess, addIceCandidateError);
-    //             }
-    //         }
-    //     });
-    // }
-
-    ///////////////////////////////////////////
-    // UTIL FUNCTIONS
-    ///////////////////////////////////////////
-
-    /**
-	 *
-	 * Call the registered _onRemoteVideoCallback
-	 *
-	 */
-    function addRemoteVideo(stream, from) {
+    function addRemoteVideo(from) {
         // call the callback
-        _onRemoteVideoCallback(stream, from);
+        _onRemoteVideoCallback(from);
     }
 
-    /**
-	 *
-	 * Generates a random ID.
-	 *
-	 * @return a random ID
-	 */
     function generateID() {
         let s4 = function () {
             return Math.floor(Math.random() * 0x10000).toString(16);
@@ -254,120 +160,72 @@ let MeetingSfu = function (socketioHost, __id) {
         return s4() + s4() + "-" + s4() + "-" + s4() + "-" + s4() + "-" + s4() + s4() + s4();
     }
 
-    ////////////////////////////////////////////////
-    // COMMUNICATION FUNCTIONS
-    ////////////////////////////////////////////////
-
-    /**
-	 *
-	 * Connect to the server and open a signal channel using channel as the channel's name.
-	 *
-	 * @return the socket
-	 */
     function openSignalingChannel(channel) {
         let namespace = _host + '/' + channel;
         let sckt = io.connect(namespace);
         return sckt;
     }
 
+    function processedSdp(sdp) {
+        return preferOpus(sdp);
+    }
+
     function createUplinkOffer() {
-        _opc = new RTCPeerConnection(_pcConfig);
-        _opc.onicecandidate = handleIceCandidateAnswerWrapper(_defaultChannel);
-        // _opc.onaddstream = handleRemoteStreamAdded();
-        // _opc.onremovestream = handleRemoteStreamRemoved;
-        // _opc.addStream(_localStream);
+        if (!webRtcPeerSender) {
 
-        let onSuccess = function () {
-            return function (sessionDescription) {
-                // Set Opus as the preferred codec in SDP if Opus is present.
-                sessionDescription.sdp = preferOpus(sessionDescription.sdp);
-
-                _opc.setLocalDescription(sessionDescription, setLocalDescriptionSuccess, setLocalDescriptionError);
-                _defaultChannel.emit('cli2kms', { sdp: sessionDescription, from: _myID, type: 'offer' });
+            const options = {
+                localVideo: _localVideo,
+                onicecandidate: onIceCandidate
             }
-        }
 
-        _opc.createOffer(onSuccess(), handleCreateOfferError);
+            webRtcPeerSender = kurentoUtils.WebRtcPeer.WebRtcPeerSendonly(options, function (error) {
+                if (error) {
+                    console.error(error);
+                    return;
+                }
+
+                this.generateOffer(function(error, sdpOffer) {
+                    if (error) {
+                        console.error(error);
+                        return;
+                    }
+                    _defaultChannel.emit('cli2kms', { sdp: processedSdp(sdpOffer), from: _myID, type: 'offer' });
+                });
+            });
+        }
     }
     function createDownlinkAnswer(sdp, participantId) {
-        _apc[participantId] = new RTCPeerConnection(_pcConfig);
-        _apc[participantId].onicecandidate = handleIceCandidateAnswerWrapper(_defaultChannel);
-        _apc[participantId].onaddstream = handleRemoteStreamAdded(participantId);
-        _apc[participantId].onremovestream = handleRemoteStreamRemoved;
-        _apc[participantId].addStream(_localStream);
-        _apc[participantId].setRemoteDescription(new RTCSessionDescription(sdp), setRemoteDescriptionSuccess, setRemoteDescriptionError);
-
-        let onSuccess = function () {
-            return function (sessionDescription) {
-                sessionDescription.sdp = preferOpus(sessionDescription.sdp);
-
-                _apc[participantId].setLocalDescription(sessionDescription, setLocalDescriptionSuccess, setLocalDescriptionError);
-                _defaultChannel.emit('cli2kms', { sdp: sessionDescription, from: _myID, type: 'answer' });
-            }
+        addRemoteVideo(participantId);
+        let _remoteVideo = document.getElementById(`video-${participantId}`);
+        const options = {
+            remoteVideo: _remoteVideo,
+            onicecandidate: onIceCandidate
         }
 
-        _apc[participantId].createAnswer(onSuccess(), handleCreateAnswerError);
+        webRtcPeerReceivers[participantId] = kurentoUtils.WebRtcPeer.WebRtcPeerRecvonly(options, function (error) {
+            if (error) {
+                console.error(error);
+                return;
+            }
+        });
+        webRtcPeerReceivers[participantId].processOffer(sdp, function(err, sdpAnswer) {
+            if (err) {
+                console.log(err);
+                return;
+            }
+            _defaultChannel.emit('cli2kms', { sdp: processedSdp(sdpAnswer), from: _myID, type: 'answer' });
+        });
     }
 
-    function createOffer1(participantId) {
-        console.log('Creating offer for peer ' + participantId);
-        _opc[participantId] = new RTCPeerConnection(_pcConfig);
-        _opc[participantId].onicecandidate = handleIceCandidateAnswerWrapper(_offerChannels[participantId], participantId);
-        _opc[participantId].onaddstream = handleRemoteStreamAdded(participantId);
-        _opc[participantId].onremovestream = handleRemoteStreamRemoved;
-        _opc[participantId].addStream(_localStream);
+    function onIceCandidate(candidate) {
+        console.log('Local candidate' + JSON.stringify(candidate));
 
-        try {
-            // Reliable Data Channels not yet supported in Chrome
-            _sendChannel[participantId] = _opc[participantId].createDataChannel("sendDataChannel", { reliable: false });
-            _sendChannel[participantId].onmessage = handleDataChannel;
-            console.log('Created send data channel');
-        } catch (e) {
-            alert('Failed to create data channel. ' + 'You need Chrome M25 or later with RtpDataChannel enabled');
-            console.log('createDataChannel() failed with exception: ' + e.message);
+        let message = {
+            type: 'candidate',
+            candidate: candidate,
+            from: _myID
         }
-        _sendChannel[participantId].onopen = handleSendChannelStateChange(participantId);
-        _sendChannel[participantId].onclose = handleSendChannelStateChange(participantId);
-
-        let onSuccess = function (participantId) {
-            return function (sessionDescription) {
-                let channel = _offerChannels[participantId];
-
-                // Set Opus as the preferred codec in SDP if Opus is present.
-                sessionDescription.sdp = preferOpus(sessionDescription.sdp);
-
-                _opc[participantId].setLocalDescription(sessionDescription, setLocalDescriptionSuccess, setLocalDescriptionError);
-                console.log('Sending offer to channel ' + channel.name);
-                channel.emit('message', { snDescription: sessionDescription, from: _myID, type: 'offer', dest: participantId });
-            }
-        }
-
-        _opc[participantId].createOffer(onSuccess(participantId), handleCreateOfferError);
-    }
-
-    function createAnswer1(sdp, cnl, to) {
-        console.log('Creating answer for peer ' + to);
-        _apc[to] = new RTCPeerConnection(_pcConfig);
-        _apc[to].onicecandidate = handleIceCandidateAnswerWrapper(cnl, to);
-        _apc[to].onaddstream = handleRemoteStreamAdded(to);
-        _apc[to].onremovestream = handleRemoteStreamRemoved;
-        _apc[to].addStream(_localStream);
-        _apc[to].setRemoteDescription(new RTCSessionDescription(sdp.snDescription), setRemoteDescriptionSuccess, setRemoteDescriptionError);
-
-        _apc[to].ondatachannel = gotReceiveChannel(to);
-
-        let onSuccess = function (channel) {
-            return function (sessionDescription) {
-                // Set Opus as the preferred codec in SDP if Opus is present.
-                sessionDescription.sdp = preferOpus(sessionDescription.sdp);
-
-                _apc[to].setLocalDescription(sessionDescription, setLocalDescriptionSuccess, setLocalDescriptionError);
-                console.log('Sending answer to channel ' + channel.name);
-                channel.emit('message', { snDescription: sessionDescription, from: _myID, type: 'answer', dest: to });
-            }
-        }
-
-        _apc[to].createAnswer(onSuccess(cnl), handleCreateAnswerError);
+        _defaultChannel.emit('cli2kms', message);
     }
 
     function hangup(from) {
@@ -378,19 +236,13 @@ let MeetingSfu = function (socketioHost, __id) {
         //     _opc[from] = null;
         // }
 
-        if (_apc.hasOwnProperty(from)) {
-            _apc[from].close();
-            _apc[from] = null;
-        }
+        // if (_apc.hasOwnProperty(from)) {
+        //     _apc[from].close();
+        //     _apc[from] = null;
+        // }
 
         _onParticipantHangupCallback(from);
     }
-
-    ////////////////////////////////////////////////
-    // HANDLERS
-    ////////////////////////////////////////////////
-
-    // SUCCESS HANDLERS
 
     function handleUserMedia(stream) {
         console.log('Adding local stream');
@@ -457,10 +309,6 @@ let MeetingSfu = function (socketioHost, __id) {
         return function () {
             let readyState = _sendChannel[participantId].readyState;
             console.log('Send channel state is: ' + readyState);
-
-            // check if we have at least one open channel before we set hat ready to false.
-            // let open = checkIfOpenChannel();
-            // enableMessageInterface(open);
         }
     }
 
@@ -468,10 +316,6 @@ let MeetingSfu = function (socketioHost, __id) {
         return function () {
             let readyState = _sendChannel[participantId].readyState;
             console.log('Receive channel state is: ' + readyState);
-
-            // check if we have at least one open channel before we set hat ready to false.
-            // let open = checkIfOpenChannel();
-            // enableMessageInterface(open);
         }
     }
 
