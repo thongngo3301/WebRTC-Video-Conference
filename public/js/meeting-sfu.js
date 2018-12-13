@@ -35,6 +35,10 @@ let MeetingSfu = function (socketioHost, __id) {
     let webRtcPeerSender = null;
     let webRtcPeerReceivers = {};
     let _localVideo = document.getElementById('localVideo');
+    let candidatesQueueSender = [];
+    let candidatesQueueReceivers = {};
+    let _addedCQS = [];
+    let _addedCQR = {};
 
     function joinRoom(name) {
         _room = name;
@@ -138,11 +142,28 @@ let MeetingSfu = function (socketioHost, __id) {
                     break;
                 case 'candidate':
                     if (message.from && message.from != _myID && webRtcPeerReceivers[message.from]) {
-                        webRtcPeerReceivers[message.from].addIceCandidate(message.candidate);
-                    } else {
-                        webRtcPeerSender.addIceCandidate(message.candidate);
+                        if (!_addedCQR[message.from]) {
+                            _addedCQR[message.from] = [];
+                        }
+                        if (_addedCQR[message.from].includes(message.candidate)) return;
+                        _addedCQR[message.from].push(message.candidate);
+                        if (webRtcPeerReceivers[message.from].getRemoteSessionDescriptor()) {
+                            webRtcPeerReceivers[message.from].addIceCandidate(message.candidate);
+                        } else {
+                            if (!candidatesQueueReceivers[message.from]) {
+                                candidatesQueueReceivers[message.from] = [];
+                            }
+                            candidatesQueueReceivers[message.from].push(message.candidate);
+                        }
+                    } else if (webRtcPeerSender) {
+                        if (_addedCQS.includes(message.candidate)) return;
+                        _addedCQS.push(message.candidate);
+                        if (webRtcPeerSender.getRemoteSessionDescriptor()) {
+                            webRtcPeerSender.addIceCandidate(message.candidate);
+                        } else {
+                            candidatesQueueSender.push(message.candidate);
+                        }
                     }
-                    // webRtcPeer.addIceCandidate(message.candidate);
                     break;
             }
         });
@@ -191,35 +212,46 @@ let MeetingSfu = function (socketioHost, __id) {
                     }
                     _defaultChannel.emit('cli2kms', { sdp: processedSdp(sdpOffer), from: _myID, type: 'offer' });
                 });
+
+                if (candidatesQueueSender.length) {
+                    candidatesQueueSender.forEach(candidate => {
+                        this.addIceCandidate(candidate);
+                    });
+                }
             });
         }
     }
     function createDownlinkAnswer(sdp, participantId) {
-        addRemoteVideo(participantId);
-        let _remoteVideo = document.getElementById(`video-${participantId}`);
-        const options = {
-            remoteVideo: _remoteVideo,
-            onicecandidate: onIceCandidate
-        }
+        if (!webRtcPeerReceivers[participantId]) {
+            addRemoteVideo(participantId);
+            let _remoteVideo = document.getElementById(`video-${participantId}`);
+            const options = {
+                remoteVideo: _remoteVideo,
+                onicecandidate: onIceCandidate
+            }
 
-        webRtcPeerReceivers[participantId] = kurentoUtils.WebRtcPeer.WebRtcPeerRecvonly(options, function (error) {
-            if (error) {
-                console.error(error);
-                return;
-            }
-        });
-        webRtcPeerReceivers[participantId].processOffer(sdp, function(err, sdpAnswer) {
-            if (err) {
-                console.log(err);
-                return;
-            }
-            _defaultChannel.emit('cli2kms', { sdp: processedSdp(sdpAnswer), from: _myID, type: 'answer' });
-        });
+            webRtcPeerReceivers[participantId] = kurentoUtils.WebRtcPeer.WebRtcPeerRecvonly(options, function (error) {
+                if (error) {
+                    console.error(error);
+                    return;
+                }
+                this.processOffer(sdp, function(err, sdpAnswer) {
+                    if (err) {
+                        console.log(err);
+                        return;
+                    }
+                    _defaultChannel.emit('cli2kms', { sdp: processedSdp(sdpAnswer), from: _myID, type: 'answer' });
+                });
+                if (candidatesQueueReceivers[participantId] && candidatesQueueReceivers[participantId].length) {
+                    candidatesQueueReceivers[participantId].forEach(candidate => {
+                        this.addIceCandidate(candidate);
+                    });
+                }
+            });
+        }
     }
 
     function onIceCandidate(candidate) {
-        console.log('Local candidate' + JSON.stringify(candidate));
-
         let message = {
             type: 'candidate',
             candidate: candidate,

@@ -19,6 +19,7 @@ const serverPort = 8443;
 // LOCAL
 // const serverIpAddress = '0.0.0.0';
 // const socketIoServer = 'https://localhost';
+// const socketIoServer = 'https://192.168.16.212';
 const kurento_uri = 'ws://192.168.0.20:8888/kurento';
 ////////////////////////////////////////////////
 
@@ -66,7 +67,7 @@ const sslServ = https.createServer(options, app).listen(serverPort, serverIpAddr
 const io = require('socket.io').listen(sslServ);
 
 const sdpOfferCache = {};
-
+let candidatesQueue = {};
 
 ////////////////////////////////////////////////
 // EVENT HANDLERS
@@ -107,7 +108,15 @@ io.sockets.on('connection', function (socket) {
 							socket.pipeline = pipeline;
 							pipeline.create('WebRtcEndpoint', (error, webRtcEndpoint) => {
 								socket.webRtcEndpoint = webRtcEndpoint;
+
 								// Relay icecandidate from kurento server to client
+								if (candidatesQueue[socket.room]) {
+									while(candidatesQueue[socket.room].length) {
+										let candidate = candidatesQueue[socket.room].shift();
+										webRtcEndpoint.addIceCandidate(candidate);
+									}
+								}
+
 								webRtcEndpoint.on('OnIceCandidate', event => {
 									let candidate = kurento.getComplexType('IceCandidate')(event.candidate);
 									socket.emit('kms2cli', {
@@ -138,12 +147,21 @@ io.sockets.on('connection', function (socket) {
 									}
 								});
 
+								console.log(`Clients in room ${socket.room} (${io.sockets.clients(socket.room).length}): `, io.sockets.clients(socket.room));
+								let numOfUserInRoom = io.sockets.clients(socket.room).length;
+								if (numOfUserInRoom <= 1) return;
 								io.sockets.clients(socket.room).forEach(client => {
 									if (client.participantID != socket.participantID) {
 										// old user as viewer
 										// 2.5
 										socket.pipeline.create('WebRtcEndpoint', (error, webRtcEndpoint) => {
 											client.streamInput[socket.participantID] = webRtcEndpoint;
+											if (candidatesQueue[socket.room]) {
+												while(candidatesQueue[socket.room].length) {
+													let candidate = candidatesQueue[socket.room].shift();
+													webRtcEndpoint.addIceCandidate(candidate);
+												}
+											}
 											webRtcEndpoint.on('OnIceCandidate', event => {
 												let candidate = kurento.getComplexType('IceCandidate')(event.candidate);
 												socket.emit('kms2cli', {
@@ -176,6 +194,12 @@ io.sockets.on('connection', function (socket) {
 										// 3
 										client.pipeline.create('WebRtcEndpoint', (error, webRtcEndpoint) => {
 											socket.streamInput[client.participantID] = webRtcEndpoint;
+											if (candidatesQueue[socket.room]) {
+												while(candidatesQueue[socket.room].length) {
+													let candidate = candidatesQueue[socket.room].shift();
+													webRtcEndpoint.addIceCandidate(candidate);
+												}
+											}
 											webRtcEndpoint.on('OnIceCandidate', event => {
 												let candidate = kurento.getComplexType('IceCandidate')(event.candidate);
 												socket.emit('kms2cli', {
@@ -207,7 +231,11 @@ io.sockets.on('connection', function (socket) {
 				break;
 			case 'answer':
 				io.sockets.clients(socket.room).forEach(client => {
-					client.streamInput[client.participantID].processAnswer(message.sdp);
+					if (message.from == client.participantID && client.webRtcEndpoint) {
+						client.webRtcEndpoint.processAnswer(message.sdp);
+					} else if (client.streamInput[message.from]) {
+						client.streamInput[client.participantID].processAnswer(message.sdp);
+					}
 				});
 				// if (socket.participantID == message.from) {
 				// 	console.log('CAC');
@@ -215,11 +243,17 @@ io.sockets.on('connection', function (socket) {
 				// }
 				break;
 			case 'candidate':
-				if (message.from == socket.participantID && socket.webRtcEndpoint) {
+				if (socket.webRtcEndpoint) {
 					socket.webRtcEndpoint.addIceCandidate(message.candidate);
 				}
 				else if (socket.streamInput[message.from]) {
 					socket.streamInput[message.from].addIceCandidate(message.candidate);
+				}
+				else {
+					if (!candidatesQueue[socket.room]) {
+						candidatesQueue[socket.room] = [];
+					}
+					candidatesQueue[socket.room].push(message.candidate);
 				}
 				break;
 		}
