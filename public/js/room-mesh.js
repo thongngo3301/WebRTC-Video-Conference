@@ -19,8 +19,8 @@ function setupMesh(room) {
 
 	meeting_mesh.onLocalVideo(function (stream) {
 		//alert(stream.getVideoTracks().length);
-		document.querySelector('#localVideo').src = window.URL.createObjectURL(stream);
-		// document.querySelector('#localVideo').srcObject = stream;
+		// document.querySelector('#localVideo').src = window.URL.createObjectURL(stream);
+		document.querySelector('#localVideo').srcObject = stream;
 
 		$("#micMenu").on("click", function callback(e) {
 			meeting_mesh.toggleMic();
@@ -78,8 +78,8 @@ function addRemoteVideo(stream, participantID) {
 	let $videoBox = $("<div class='videoWrap' id='" + participantID + "'></div>");
 	let $video = $(`<video class='videoBox' id="video-${participantID}" autoplay></video>`);
 	if (stream) {
-		$video.attr({ "src": window.URL.createObjectURL(stream), "autoplay": "autoplay" });
-		// $video.attr({ "srcObject": stream, "autoplay": "autoplay" });
+		// $video.attr({ "src": window.URL.createObjectURL(stream), "autoplay": "autoplay" });
+		$video.attr({ "src": stream, "autoplay": "autoplay" });
 	}
 	$videoBox.append($video);
 	$("#videosWrapper").append($videoBox);
