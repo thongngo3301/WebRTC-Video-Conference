@@ -8,9 +8,9 @@ $(document).ready(function () {
 	// CREATE MEETING
 	/////////////////////////////////
 
-	// setupMesh(room);
+	setupMesh(room);
 
-	setupSfu(room);
+	// setupSfu(room);
 
 }); // end of document.ready
 
@@ -78,7 +78,8 @@ function addRemoteVideo(stream, participantID) {
 	let $videoBox = $("<div class='videoWrap' id='" + participantID + "'></div>");
 	let $video = $(`<video class='videoBox' id="video-${participantID}" autoplay></video>`);
 	if (stream) {
-		$video.attr({ "src": window.URL.createObjectURL(stream), "autoplay": "autoplay" });
+		// $video.attr({ "src": window.URL.createObjectURL(stream), "autoplay": "autoplay" });
+		$video.attr({ "srcObject": stream, "autoplay": "autoplay" });
 	}
 	$videoBox.append($video);
 	$("#videosWrapper").append($videoBox);
