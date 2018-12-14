@@ -196,7 +196,8 @@ let MeetingSfu = function (socketioHost, __id) {
 
             const options = {
                 localVideo: _localVideo,
-                onicecandidate: onIceCandidateForUplink
+                onicecandidate: onIceCandidateForUplink,
+                configuration: _pcConfig
             }
 
             webRtcPeerSender = kurentoUtils.WebRtcPeer.WebRtcPeerSendonly(options, function (error) {
@@ -227,7 +228,8 @@ let MeetingSfu = function (socketioHost, __id) {
             let _remoteVideo = document.getElementById(`video-${participantId}`);
             const options = {
                 remoteVideo: _remoteVideo,
-                onicecandidate: onIceCandidateForDownlink
+                onicecandidate: onIceCandidateForDownlink,
+                configuration: _pcConfig
             }
 
             webRtcPeerReceivers[participantId] = kurentoUtils.WebRtcPeer.WebRtcPeerRecvonly(options, function (error) {
