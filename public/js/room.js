@@ -19,7 +19,8 @@ function setupMesh(room) {
 
 	meeting_mesh.onLocalVideo(function (stream) {
 		//alert(stream.getVideoTracks().length);
-		document.querySelector('#localVideo').src = window.URL.createObjectURL(stream);
+		// document.querySelector('#localVideo').src = window.URL.createObjectURL(stream);
+		document.querySelector('#localVideo').srcObject = stream;
 
 		$("#micMenu").on("click", function callback(e) {
 			meeting_mesh.toggleMic();
