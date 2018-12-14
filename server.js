@@ -270,16 +270,15 @@ io.sockets.on('connection', function (socket) {
 		socket.participantID = participantID;
 		configNameSpaceChannel(participantID);
 		//random name
-		const userTmp = usersDB.find(e => e.participantID === tmp.participantID);
+		const userTmp = usersDB.find(e => e.participantID === socket.participantID);
 		console.log(userTmp);
 		if (userTmp) {
 			socket.userName = userTmp.userName;
 			console.log("old");
 		} else {
 			console.log("new");
-			tmp.userName = getRandomName(usersDB);
-			socket.userName = tmp.userName;
-			usersDB.push(tmp);
+			socket.userName = getRandomName(usersDB);
+			usersDB.push(socket);
 		}
 
 		let numClients = io.sockets.clients(room).length;
