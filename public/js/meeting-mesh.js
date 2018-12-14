@@ -77,6 +77,7 @@ let MeetingMesh = function (socketioHost, __id) {
         for (let i = 0; i < tracks.length; i++) {
             if (tracks[i].kind == "audio") {
                 tracks[i].enabled = !tracks[i].enabled;
+                // $("#myCanvas").hide();
             }
         }
     }
@@ -93,11 +94,6 @@ let MeetingMesh = function (socketioHost, __id) {
                 tracks[i].enabled = !tracks[i].enabled;
                 $("#myCanvas").hide();
             }   
-            else {
-                // tracks[i].enabled = tracks[i].enabled;
-                $("#myCanvas").show();
-            }
-            // $("#myCanvas").show();
         }
     }
 

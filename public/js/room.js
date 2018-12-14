@@ -150,4 +150,4 @@ function Switch(){
 	}	else {
 		img.src = "/picture/cadre_halloween.png";
 	}
-	
+}
