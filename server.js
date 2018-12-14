@@ -64,6 +64,29 @@ const sslServ = https.createServer(options, app).listen(serverPort, serverIpAddr
 // 	console.log("Express is running on port " + serverPort);
 // });
 
+//random name
+const usersDB = [
+	{
+		userName: "x",
+		participantID: "1"
+	},
+]
+
+const names = [
+	'Chó', 'Mèo', 'Lợn', 'Gà', 'DOGE', 'PIG', 'Chồn chồn', 'Gấu', 'Chim cánh cụt', 'Khung long', 'Tê tê', 'x'
+]
+
+getRandomName = (tmpName) => {
+	const namesTmp = names.slice();
+	tmpName.forEach(element => {
+		namesTmp.splice(namesTmp.indexOf(element.userName), 1);
+	});
+	const name = namesTmp[Math.floor(Math.random() * namesTmp.length)]
+	return name;
+}
+
+
+//end
 const io = require('socket.io').listen(sslServ);
 
 const sdpOfferCache = {};
@@ -95,7 +118,7 @@ io.sockets.on('connection', function (socket) {
 		});
 	});
 
-	socket.on('cli2kms', function(message) {
+	socket.on('cli2kms', function (message) {
 		switch (message.type) {
 			// 1
 			case 'offer':
@@ -276,6 +299,18 @@ io.sockets.on('connection', function (socket) {
 		let participantID = message.from;
 		socket.participantID = participantID;
 		configNameSpaceChannel(participantID);
+		//random name
+		const userTmp = usersDB.find(e => e.participantID === tmp.participantID);
+		console.log(userTmp);
+		if (userTmp) {
+			socket.userName = userTmp.userName;
+			console.log("old");
+		} else {
+			console.log("new");
+			tmp.userName = getRandomName(usersDB);
+			socket.userName = tmp.userName;
+			usersDB.push(tmp);
+		}
 
 		let numClients = io.sockets.clients(room).length;
 
@@ -294,13 +329,14 @@ io.sockets.on('connection', function (socket) {
 		socket.emit('create_or_join_success');
 	});
 
-	socket.on('send_message', function(message) {
+	socket.on('send_message', function (message) {
 		let room = socket.room;
 		io.sockets.clients(room).forEach(client => {
 			if (client.participantID != socket.participantID) {
 				client.emit('new_message', JSON.stringify({
 					participantID: socket.participantID,
-					message: message
+					message: message,
+					userName: socket.userName
 				}));
 			}
 		});

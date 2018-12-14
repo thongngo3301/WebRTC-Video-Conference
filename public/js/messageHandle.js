@@ -22,21 +22,21 @@ getRandomName = (tmpName) => {
 
 $(document).ready(() => {
     const socket = io.connect("https://fit5.fit-uet.tk:8443");
+    // const socket = io.connect("https://localhost:8443");
     socket.emit("join");
-    console.log(socket);
     socket.on("new_message", data => {
         const tmp = JSON.parse(data);
-        console.log(tmp.participantID);
-        const userTmp = usersDB.find(e => e.participantID === tmp.participantID);
-        console.log(userTmp);
-        if (userTmp) {
-            tmp.userName = userTmp.userName;
-            console.log("old");
-        } else {
-            console.log("new");
-            tmp.userName = getRandomName(usersDB);
-            usersDB.push(tmp);
-        }
+        console.log(tmp);
+        // const userTmp = usersDB.find(e => e.participantID === tmp.participantID);
+        // console.log(userTmp);
+        // if (userTmp) {
+        //     tmp.userName = userTmp.userName;
+        //     console.log("old");
+        // } else {
+        //     console.log("new");
+        //     tmp.userName = getRandomName(usersDB);
+        //     usersDB.push(tmp);
+        // }
         $("#chat-list").append(`
         <div class="chat-message-left">
             <div class="message-container">
