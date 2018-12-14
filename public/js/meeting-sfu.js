@@ -196,7 +196,7 @@ let MeetingSfu = function (socketioHost, __id) {
 
             const options = {
                 localVideo: _localVideo,
-                onicecandidate: onIceCandidate
+                onicecandidate: onIceCandidateForUplink
             }
 
             webRtcPeerSender = kurentoUtils.WebRtcPeer.WebRtcPeerSendonly(options, function (error) {
@@ -227,7 +227,7 @@ let MeetingSfu = function (socketioHost, __id) {
             let _remoteVideo = document.getElementById(`video-${participantId}`);
             const options = {
                 remoteVideo: _remoteVideo,
-                onicecandidate: onIceCandidate
+                onicecandidate: onIceCandidateForDownlink
             }
 
             webRtcPeerReceivers[participantId] = kurentoUtils.WebRtcPeer.WebRtcPeerRecvonly(options, function (error) {
@@ -240,7 +240,7 @@ let MeetingSfu = function (socketioHost, __id) {
                         console.log(err);
                         return;
                     }
-                    _defaultChannel.emit('cli2kms', { sdp: processedSdp(sdpAnswer), from: _myID, type: 'answer' });
+                    _defaultChannel.emit('cli2kms', { sdp: processedSdp(sdpAnswer), from: _myID, to: participantId, type: 'answer' });
                 });
                 if (candidatesQueueReceivers[participantId] && candidatesQueueReceivers[participantId].length) {
                     candidatesQueueReceivers[participantId].forEach(candidate => {
@@ -251,9 +251,17 @@ let MeetingSfu = function (socketioHost, __id) {
         }
     }
 
-    function onIceCandidate(candidate) {
+    function onIceCandidateForUplink(candidate) {
         let message = {
-            type: 'candidate',
+            type: 'candidateUplink',
+            candidate: candidate,
+            from: _myID
+        }
+        _defaultChannel.emit('cli2kms', message);
+    }
+    function onIceCandidateForDownlink(candidate) {
+        let message = {
+            type: 'candidateDownlink',
             candidate: candidate,
             from: _myID
         }

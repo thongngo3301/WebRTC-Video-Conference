@@ -8,9 +8,9 @@ $(document).ready(function () {
 	// CREATE MEETING
 	/////////////////////////////////
 
-	setupMesh(room);
+	// setupMesh(room);
 
-	// setupSfu(room);
+	setupSfu(room);
 
 }); // end of document.ready
 
