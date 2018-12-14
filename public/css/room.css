@@ -15,9 +15,7 @@ body {
     flex-basis: 60%;
 }
 
-#myCanvas {
-    border: 1px solid #FF0000;
-}
+
 /*chat*/
 
 #chat-container {
@@ -239,4 +237,14 @@ video {
 
 .chat {
     flex-shrink: 1;
+}
+
+#myCanvas {
+    position: absolute;
+    left: 15px;
+    margin: 0;
+    bottom: 0.5em;
+    padding: 4px;
+    height: 100%;
+    width: 100%; 
 }

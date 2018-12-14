@@ -9,13 +9,13 @@
 	<script src='/socket.io/socket.io.js'></script>
 	<script src='/js/lib/adapter.js'></script>
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+	<script src="/js/lib/kurento-utils.min.js"></script>
 	<script src='/js/meeting-mesh.js'></script>
 	<script src='/js/meeting-sfu.js'></script>
 	<script src='/js/room.js'></script>
 	<script src='/js/messageHandle.js'></script>
 	<link rel="stylesheet" type="text/css" href="/css/room.css" media="screen" />
 	<title>Video Conference</title>
-	
 </head>
 
 <body>
@@ -24,17 +24,20 @@
 			<div id="videos-containter">
 				<div id="videos">
 					<div id="videosWrapper">
-						<div id="localVideoWrap" class='videoWrap'>
-							<video class="videoBox" id="localVideo" autoplay></video>
-							<canvas id="myCanvas"></canvas>
-						</div>
+							<div id="localVideoWrap" class='videoWrap'>
+								<video class="videoBox" id="localVideo" autoplay></video>
+								<canvas id="myCanvas" class="overlap"></canvas>
+										<!-- <video class="videoBox" id="localVideo" autoplay><canvas id="myCanvas" class="overlap"></canvas></video> -->
+										<!-- <canvas id="myCanvas" class="overlap"><video class="videoBox" id="localVideo" autoplay></video></canvas> -->
+							</div>	
 					</div>
 				</div>
 			</div>
 			<div>
 				<button id="micMenu">Toggle Microphone</button>
 				<button id="videoMenu">Toggle Video</button>
-				<button onclick="mySwitch()">Switch</button>
+				<button onclick="Switch()" >Switch</button>
+
 			</div>
 		</div>
 		<div id="chat-container">

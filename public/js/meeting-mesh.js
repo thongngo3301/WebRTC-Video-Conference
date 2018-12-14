@@ -91,7 +91,13 @@ let MeetingMesh = function (socketioHost, __id) {
         for (let i = 0; i < tracks.length; i++) {
             if (tracks[i].kind == "video") {
                 tracks[i].enabled = !tracks[i].enabled;
+                $("#myCanvas").hide();
+            }   
+            else {
+                // tracks[i].enabled = tracks[i].enabled;
+                $("#myCanvas").show();
             }
+            // $("#myCanvas").show();
         }
     }
 

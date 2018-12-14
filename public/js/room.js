@@ -30,9 +30,9 @@ function setupMesh(room) {
 		});
 
 		$("#localVideo").prop('muted', true);
-		
+
 	});
-		
+
 	meeting_mesh.onRemoteVideo(function (stream, participantID) {
 		addRemoteVideo(stream, participantID);
 	});
@@ -48,24 +48,21 @@ function setupMesh(room) {
 function setupSfu(room) {
 	let meeting_sfu = new MeetingSfu(host);
 
-	meeting_sfu.onLocalVideo(function (stream) {
-		//alert(stream.getVideoTracks().length);
-		document.querySelector('#localVideo').src = window.URL.createObjectURL(stream);
+	// meeting_sfu.onLocalVideo(function () {
+	// 	$("#micMenu").on("click", function callback(e) {
+	// 		meeting_sfu.toggleMic();
+	// 	});
 
-		$("#micMenu").on("click", function callback(e) {
-			meeting_sfu.toggleMic();
-		});
+	// 	$("#videoMenu").on("click", function callback(e) {
+	// 		meeting_sfu.toggleVideo();
+	// 	});
 
-		$("#videoMenu").on("click", function callback(e) {
-			meeting_sfu.toggleVideo();
-		});
+	// 	$("#localVideo").prop('muted', true);
 
-		$("#localVideo").prop('muted', true);
+	// });
 
-	});
-
-	meeting_sfu.onRemoteVideo(function (stream, participantID) {
-		addRemoteVideo(stream, participantID);
+	meeting_sfu.onRemoteVideo(function (participantID) {
+		addRemoteVideo(null, participantID);
 	});
 
 	meeting_sfu.onParticipantHangup(function (participantID) {
@@ -78,8 +75,10 @@ function setupSfu(room) {
 
 function addRemoteVideo(stream, participantID) {
 	let $videoBox = $("<div class='videoWrap' id='" + participantID + "'></div>");
-	let $video = $("<video class='videoBox' autoplay></video>");
-	$video.attr({ "src": window.URL.createObjectURL(stream), "autoplay": "autoplay" });
+	let $video = $(`<video class='videoBox' id="video-${participantID}" autoplay></video>`);
+	if (stream) {
+		$video.attr({ "src": window.URL.createObjectURL(stream), "autoplay": "autoplay" });
+	}
 	$videoBox.append($video);
 	$("#videosWrapper").append($videoBox);
 
@@ -135,20 +134,20 @@ function adjustVideoSize() {
 		$('#videosWrapper').find("br").remove();
 	}
 }
-
-// Switch
-function mySwitch(){
+var count = 0;
+function Switch(){
 	var t = document.getElementById("myCanvas");
 	var video = document.getElementById("localVideo");
 	var ctx = t.getContext('2d');
 	var img = new Image();
 	img.onload = function(){
-		console.log(ctx);
-		// ctx.drawImage(img,0,0, video.width,video.height, 0,0, video.width,video.height);
-		ctx.drawImage(img,0,0,img.width, img.height, 0, 0, t.width, t.height);
-		// ctx.drawImage(video,0,0,video.width, video.height, 0, 0, t.width, t.height);
-		console.log("runn....");
-		// alert(t.toDataURL('/picture/cadre_halloween.png'));
-	};
-	img.src = "/picture/cadre_halloween.png";
-}
+		ctx.clearRect(0, 0, img.width, img.height);
+		ctx.drawImage(img, 0, 0, img.width, img.height, 0, 0, t.width, t.height);
+
+	}
+	if(count %2 == 0){
+		img.src = "/picture/t.jpg";
+	}	else {
+		img.src = "/picture/cadre_halloween.png";
+	}
+	
