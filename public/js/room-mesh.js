@@ -77,12 +77,14 @@ function setupSfu(room) {
 function addRemoteVideo(stream, participantID) {
 	let $videoBox = $("<div class='videoWrap' id='" + participantID + "'></div>");
 	let $video = $(`<video class='videoBox' id="video-${participantID}" autoplay></video>`);
-	if (stream) {
-		// $video.attr({ "src": window.URL.createObjectURL(stream), "autoplay": "autoplay" });
-		$video.attr({ "src": stream, "autoplay": "autoplay" });
-	}
 	$videoBox.append($video);
 	$("#videosWrapper").append($videoBox);
+
+	if (stream) {
+		document.getElementById(`video-${participantID}`).srcObject = stream;
+		// $video.attr({ "src": window.URL.createObjectURL(stream), "autoplay": "autoplay" });
+		// $video.attr({ "src": stream, "autoplay": "autoplay" });
+	}
 
 	adjustVideoSize();
 
