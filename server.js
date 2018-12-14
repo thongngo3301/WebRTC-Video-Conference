@@ -76,7 +76,7 @@ const names = [
 	'Chó', 'Mèo', 'Lợn', 'Gà', 'DOGE', 'PIG', 'Chồn chồn', 'Gấu', 'Chim cánh cụt', 'Khung long', 'Tê tê', 'x'
 ]
 
-getRandomName = (tmpName) => {
+function getRandomName(tmpName) {
 	const namesTmp = names.slice();
 	tmpName.forEach(element => {
 		namesTmp.splice(namesTmp.indexOf(element.userName), 1);
