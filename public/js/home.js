@@ -4,9 +4,13 @@ $(document).ready(function () {
     $('#random-btn').click(function () {
         generateRoomUrl();
     });
-    $('#join-btn').click(function () {
+    $('#join-mesh-btn').click(function () {
         let roomName = document.getElementById("room-url").value;
-        joinRoom(roomName);
+        joinRoom('mesh', roomName);
+    });
+    $('#join-sfu-btn').click(function () {
+        let roomName = document.getElementById("room-url").value;
+        joinRoom('sfu', roomName);
     });
     $('#room-url').keyup(function (e) {
         if (e.keyCode == 13) {
@@ -25,6 +29,6 @@ function generateRoomUrl() {
     roomUrl.value = randomUrl();
 }
 
-function joinRoom(roomName) {
-    window.open(rootURL + roomName);
+function joinRoom(type, roomName) {
+    window.open(rootURL + type + '/' + roomName);
 }

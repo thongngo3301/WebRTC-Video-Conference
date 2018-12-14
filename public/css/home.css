@@ -91,7 +91,7 @@ body {
     text-align: start;
 }
 
-#join-btn {
+.join-btn {
     background-color: #4285F4;
     border: none;
     border-radius: 2px;

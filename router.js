@@ -13,11 +13,17 @@ module.exports = function (app, socketIoServer) {
         res.render('home');
     });
 
-    app.get('/:path', function (req, res) {
+    app.get('/mesh/:path', function (req, res) {
         let path = req.params.path;
         console.log(path);
-        console.log("Requested room " + path);
-        res.render('room', { "hostAddress": socketIoServer });
+        console.log("Requested room-mesh " + path);
+        res.render('room-mesh', { "hostAddress": socketIoServer });
     });
 
+    app.get('/sfu/:path', function (req, res) {
+        let path = req.params.path;
+        console.log(path);
+        console.log("Requested room-sfu " + path);
+        res.render('room-sfu', { "hostAddress": socketIoServer });
+    });
 }
