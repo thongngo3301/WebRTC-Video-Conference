@@ -45,6 +45,9 @@ $(document).ready(() => {
             </div>
         </div>`
         )
+        var e = document.getElementById("chat-list").childNodes;
+        console.log(e);
+        e[e.length - 1].scrollIntoView();
     })
 
     socket.on('message-data', (messages) => {
