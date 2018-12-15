@@ -15,7 +15,7 @@ $(document).ready(function () {
     $('#room-url').keyup(function (e) {
         if (e.keyCode == 13) {
             let roomName = document.getElementById("room-url").value;
-            joinRoom(roomName);
+            joinRoom('mesh', roomName);
         }
     });
 });

@@ -74,11 +74,11 @@ const usersDB = {
 	]
 }
 const nameTemplates = [
-	'Chó', 'Mèo', 'Lợn', 'Gà', 'DOGE', 'Quạ', 'Chồn chồn', 'Gấu', 'Chim cánh cụt', 'Khung long', 'Tê tê', 'Chuồn chuồn', 'Cá sẫu', 'Cá đẹp', 'Cá mập', 'Mèo', 'Tu hú', 'Chim sẻ', 'Cu gáy', 'Chim cu'
+	'Chó', 'Mèo', 'Lợn', 'Gà', 'DOGE', 'Quạ', 'Chồn chồn', 'Gấu', 'Chim cánh cụt', 'Khung long', 'Tê tê', 'Chuồn chuồn', 'Cá sẫu', 'Cá đẹp', 'Cá mập', 'Mèo', 'Tu hú', 'Chim sẻ', 'Cu gáy', 'Chim cu', 'Đà điểu', 'Lười', 'Tinh tinh', 'Đười ươi'
 ]
 const names = {
 	roomName: [
-		'Chó', 'Mèo', 'Lợn', 'Gà', 'DOGE', 'Quạ', 'Chồn chồn', 'Gấu', 'Chim cánh cụt', 'Khung long', 'Tê tê', 'Chuồn chuồn', 'Cá sẫu', 'Cá đẹp', 'Cá mập', 'Mèo', 'Tu hú', 'Chim sẻ', 'Cu gáy', 'Chim cu'
+		'Chó', 'Mèo', 'Lợn', 'Gà', 'DOGE', 'Quạ', 'Chồn chồn', 'Gấu', 'Chim cánh cụt', 'Khung long', 'Tê tê', 'Chuồn chuồn', 'Cá sẫu', 'Cá đẹp', 'Cá mập', 'Mèo', 'Tu hú', 'Chim sẻ', 'Cu gáy', 'Chim cu', 'Đà điểu', 'Lười', 'Tinh tinh', 'Đười ươi'
 	]
 }
 
@@ -92,7 +92,7 @@ function getRandomName(tmpName, roomName) {
 		return name;
 	} else {
 		names[roomName] = [
-			'Chó', 'Mèo', 'Lợn', 'Gà', 'DOGE', 'Quạ', 'Chồn chồn', 'Gấu', 'Chim cánh cụt', 'Khung long', 'Tê tê', 'Chuồn chuồn', 'Cá sẫu', 'Cá đẹp', 'Cá mập', 'Mèo', 'Tu hú', 'Chim sẻ', 'Cu gáy', 'Chim cu'
+			'Chó', 'Mèo', 'Lợn', 'Gà', 'DOGE', 'Quạ', 'Chồn chồn', 'Gấu', 'Chim cánh cụt', 'Khung long', 'Tê tê', 'Chuồn chuồn', 'Cá sẫu', 'Cá đẹp', 'Cá mập', 'Mèo', 'Tu hú', 'Chim sẻ', 'Cu gáy', 'Chim cu', 'Đà điểu', 'Lười', 'Tinh tinh', 'Đười ươi'
 		]
 		const namesTmp = names[roomName].slice();
 		tmpName.forEach(element => {
