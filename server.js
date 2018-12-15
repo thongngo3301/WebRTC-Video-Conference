@@ -65,24 +65,43 @@ const sslServ = https.createServer(options, app).listen(serverPort, serverIpAddr
 // });
 
 //random name
-const usersDB = [
-	{
-		userName: "x",
-		participantID: "1"
-	},
+const usersDB = {
+	roonName: [
+		{
+			userName: "x",
+			participantID: "1"
+		},
+	]
+}
+const nameTemplates = [
+	'Chó', 'Mèo', 'Lợn', 'Gà', 'DOGE', 'Quạ', 'Chồn chồn', 'Gấu', 'Chim cánh cụt', 'Khung long', 'Tê tê', 'Chuồn chuồn', 'Cá sẫu', 'Cá đẹp', 'Cá mập', 'Mèo', 'Tu hú', 'Chim sẻ', 'Cu gáy', 'Chim cu'
 ]
+const names = {
+	roomName: [
+		'Chó', 'Mèo', 'Lợn', 'Gà', 'DOGE', 'Quạ', 'Chồn chồn', 'Gấu', 'Chim cánh cụt', 'Khung long', 'Tê tê', 'Chuồn chuồn', 'Cá sẫu', 'Cá đẹp', 'Cá mập', 'Mèo', 'Tu hú', 'Chim sẻ', 'Cu gáy', 'Chim cu'
+	]
+}
 
-const names = [
-	'Chó', 'Mèo', 'Lợn', 'Gà', 'DOGE', 'PIG', 'Chồn chồn', 'Gấu', 'Chim cánh cụt', 'Khung long', 'Tê tê', 'x'
-]
+function getRandomName(tmpName, roomName) {
+	if (names[roomName]) {
+		const namesTmp = names[roomName].slice();
+		tmpName.forEach(element => {
+			namesTmp.splice(namesTmp.indexOf(element.userName), 1);
+		});
+		const name = namesTmp[Math.floor(Math.random() * namesTmp.length)]
+		return name;
+	} else {
+		names[roomName] = [
+			'Chó', 'Mèo', 'Lợn', 'Gà', 'DOGE', 'Quạ', 'Chồn chồn', 'Gấu', 'Chim cánh cụt', 'Khung long', 'Tê tê', 'Chuồn chuồn', 'Cá sẫu', 'Cá đẹp', 'Cá mập', 'Mèo', 'Tu hú', 'Chim sẻ', 'Cu gáy', 'Chim cu'
+		]
+		const namesTmp = names[roomName].slice();
+		tmpName.forEach(element => {
+			namesTmp.splice(namesTmp.indexOf(element.userName), 1);
+		});
+		const name = namesTmp[Math.floor(Math.random() * namesTmp.length)]
+		return name;
+	}
 
-function getRandomName(tmpName) {
-	const namesTmp = names.slice();
-	tmpName.forEach(element => {
-		namesTmp.splice(namesTmp.indexOf(element.userName), 1);
-	});
-	const name = namesTmp[Math.floor(Math.random() * namesTmp.length)]
-	return name;
 }
 
 
@@ -269,17 +288,6 @@ io.sockets.on('connection', function (socket) {
 		let participantID = message.from;
 		socket.participantID = participantID;
 		configNameSpaceChannel(participantID);
-		//random name
-		const userTmp = usersDB.find(e => e.participantID === socket.participantID);
-		console.log(userTmp);
-		if (userTmp) {
-			socket.userName = userTmp.userName;
-			console.log("old");
-		} else {
-			console.log("new");
-			socket.userName = getRandomName(usersDB);
-			usersDB.push(socket);
-		}
 
 		let numClients = io.sockets.clients(room).length;
 
@@ -289,7 +297,31 @@ io.sockets.on('connection', function (socket) {
 		if (numClients == 0) {
 			socket.join(room);
 			socket.emit('created', room);
+			usersDB[room] = [];
+			//random name
+			const userTmp = usersDB[room].find(e => e.participantID === socket.participantID);
+			console.log(userTmp);
+			if (userTmp) {
+				socket.userName = userTmp.userName;
+				console.log("old");
+			} else {
+				console.log("new");
+				socket.userName = getRandomName(usersDB[room], room);
+				usersDB[room].push(socket);
+			}
 		} else {
+			//random name
+			const userTmp = usersDB[room].find(e => e.participantID === socket.participantID);
+			console.log(userTmp);
+			if (userTmp) {
+				socket.userName = userTmp.userName;
+				console.log("old");
+			} else {
+				console.log("new");
+				socket.userName = getRandomName(usersDB[room], room);
+				usersDB[room].push(socket);
+			}
+
 			io.sockets.in(room).emit('join', room);
 			socket.join(room);
 			socket.emit('joined', room);
